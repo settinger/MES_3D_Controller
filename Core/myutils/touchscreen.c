@@ -5,15 +5,15 @@
  *      Author: Sam
  */
 
-#include "../../myutils/touchscreen.h"
+#include "touchscreen.h"
 
 #include "stm32f429i_discovery.h"
 #include "stm32f429i_discovery_lcd.h"
 #include "stm32f429i_discovery_ts.h"
 #include "stdio.h"
 
-#include "../../myutils/console.h"
-#include "../../myutils/eeprom.h"
+#include "console.h"
+#include "eeprom.h"
 
 extern TS_StateTypeDef TS_State;
 static uint8_t Calibration_Done = 0;

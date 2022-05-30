@@ -13,7 +13,7 @@
 #include <stdint.h>
 #include <stdbool.h>
 
-#include "../../myutils/app.h"
+#include "app.h"
 
 #define CONSOLE_PROMPT ("> ")
 #define PARAMETER_SEPARATOR (' ')

@@ -13,7 +13,7 @@
 
 #include <stdint.h>
 
-#include "../../myutils/console.h"
+#include "console.h"
 
 #define CONSOLE_COMMAND_MAX_COMMAND_LENGTH 10 // Length of max console command
 #define CONSOLE_COMMAND_MAX_LENGTH 256        // whole command with arguments

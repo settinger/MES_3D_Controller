@@ -5,7 +5,7 @@
  *      Author: Sam
  */
 
-#include "../../myutils/app.h"
+#include "app.h"
 
 structAppState buttonProcess(structAppState currentState) {
   return APP_NORMAL; // TODO: button

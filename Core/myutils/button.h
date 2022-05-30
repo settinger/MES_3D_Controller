@@ -8,7 +8,7 @@
 #ifndef MYUTILS_BUTTON_H_
 #define MYUTILS_BUTTON_H_
 
-#include "../../myutils/app.h"
+#include "app.h"
 
 structAppState buttonProcess(structAppState currentState);
 

@@ -41,11 +41,10 @@
 #include "stm32f429i_discovery_ts.h"
 #include "stm32f429i_discovery_gyroscope.h"
 
-#include "../myutils/app.h"
-#include "../myutils/button.h"
-#include "../myutils/console.h"
-#include "../myutils/touchscreen.h"
-#include "lis3dsh.h"
+#include "app.h"
+#include "button.h"
+#include "console.h"
+#include "touchscreen.h"
 
 /* USER CODE END Includes */
 
