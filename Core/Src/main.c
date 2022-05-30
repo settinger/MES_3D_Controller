@@ -45,6 +45,7 @@
 #include "button.h"
 #include "console.h"
 #include "touchscreen.h"
+#include "accel.h"
 
 /* USER CODE END Includes */
 
@@ -228,7 +229,9 @@ int main(void)
   // PF7 - SCK
   // PF8 - Sensor data out
   // PF9 - Sensor data in
-  // ??? - Chip select
+  // PF6 - Chip select
+  accel_init();
+
 
   // Enable sensor-fusion somethingorother
 
@@ -256,9 +259,10 @@ int main(void)
     // If two seconds have elapsed, update gyro
     if ((APP_NORMAL == appState) && ((nextTick - lastSecondTick) > 2000)) {
       // Update clock time
-      lastSecondTick += 2000;
       BSP_GYRO_GetXYZ(gyro);
       // Todo: figure out what XYZ correspond to
+      accel_getValues();
+      lastSecondTick += 2000;
     }
 
 

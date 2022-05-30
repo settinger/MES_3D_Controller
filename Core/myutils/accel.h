@@ -12,6 +12,7 @@
 #include "lis2dh_reg.h"
 
 void accel_init(void);
+void accel_getValues(void);
 
 static int32_t platform_write(void *handle, uint8_t reg, const uint8_t *bufp,
     uint16_t len);

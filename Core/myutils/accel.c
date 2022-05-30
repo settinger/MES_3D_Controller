@@ -10,6 +10,7 @@
 #include "stdio.h"
 #include <string.h>
 #include "stm32f4xx_hal.h"
+#include "stm32f4xx_hal_gpio.h"
 #include "lis2dh_reg.h"
 #include "console.h"
 
@@ -24,6 +25,8 @@ stmdev_ctx_t dev_ctx;
 
 // HSPI5 defined initialized elsewhere
 extern HAL_SPI_StateTypeDef hspi5;
+
+// Use pin PF6 as CS for the accelerometer
 
 void accel_init(void) {
   // Initialize MEMS driver interface
@@ -51,21 +54,21 @@ static int32_t platform_write(void *handle, uint8_t reg, const uint8_t *bufp,
     uint16_t len) {
   /* write multiple command */
   reg |= 0x40;
-  //HAL_GPIO_WritePin(GPIOx, GPIO_Pin, PinState) reset pin
-  HAL_SPI_Transmit(handle, &reg, 1, 100);
-  HAL_SPI_Transmit(handle, (uint8_t*) bufp, len, 100);
-  //HAL_GPIO_WritePin set pin
+  HAL_GPIO_WritePin(GPIOF, GPIO_PIN_6, GPIO_PIN_RESET);
+  HAL_SPI_Transmit(handle, &reg, 1, 1000);
+  HAL_SPI_Transmit(handle, (uint8_t*) bufp, len, 1000);
+  HAL_GPIO_WritePin(GPIOF, GPIO_PIN_6, GPIO_PIN_SET);
   return 0;
 }
 
 static int32_t platform_read(void *handle, uint8_t reg, uint8_t *bufp,
     uint16_t len) {
   // write multiple command
-  reg |= 0x80; // Shouldn't this be 0xC0??
-  // GPIO reset pin
-  HAL_SPI_Transmit(handle, &reg, 1, 100);
-  HAL_SPI_Receive(handle, bufp, len, 100);
-  // GPI set pin
+  reg |= 0xC0; // Shouldn't this be 0xC0??
+  HAL_GPIO_WritePin(GPIOF, GPIO_PIN_6, GPIO_PIN_RESET);
+  HAL_SPI_Transmit(handle, &reg, 1, 1000);
+  HAL_SPI_Receive(handle, bufp, len, 1000);
+  HAL_GPIO_WritePin(GPIOF, GPIO_PIN_6, GPIO_PIN_SET);
   return 0;
 }
 
