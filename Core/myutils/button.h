@@ -5,11 +5,11 @@
  *      Author: Sam
  */
 
-#ifndef SRC_MYUTILS_BUTTON_H_
-#define SRC_MYUTILS_BUTTON_H_
+#ifndef MYUTILS_BUTTON_H_
+#define MYUTILS_BUTTON_H_
 
-#include "app.h"
+#include "../../myutils/app.h"
 
 structAppState buttonProcess(structAppState currentState);
 
-#endif /* SRC_MYUTILS_BUTTON_H_ */
+#endif /* MYUTILS_BUTTON_H_ */

@@ -5,8 +5,8 @@
  *      Author: Sam
  */
 
-#ifndef SRC_MYUTILS_APP_H_
-#define SRC_MYUTILS_APP_H_
+#ifndef MYUTILS_APP_H_
+#define MYUTILS_APP_H_
 
 #include <stdio.h>
 #include <stdbool.h>
@@ -22,4 +22,4 @@ typedef enum structAppState {
 void appInit(void);
 
 
-#endif /* SRC_MYUTILS_APP_H_ */
+#endif /* MYUTILS_APP_H_ */

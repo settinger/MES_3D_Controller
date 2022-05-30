@@ -17,10 +17,12 @@
 
 // TODO: Take all of this out if I'm not using it
 
+#include "../../myutils/console_commands.h"
+
 #include <string.h>
-#include "console_commands.h"
-#include "console.h"
-#include "console_io.h"
+
+#include "../../myutils/console.h"
+#include "../../myutils/console_io.h"
 
 #define VERSION_STRING "Sam Code 0.0.0.1"
 #define IGNORE_UNUSED_VARIABLE(x) if ( &x == &x ) {}

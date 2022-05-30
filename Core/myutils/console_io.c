@@ -9,11 +9,12 @@
  *      Author: Sam
  */
 
+#include "../../myutils/console_io.h"
+
 #include <stdio.h>
 #include <stdbool.h>
 #include "string.h"
 #include "usart.h"
-#include "console_io.h"
 
 static uint8_t chReceive;
 static bool uart_rx;

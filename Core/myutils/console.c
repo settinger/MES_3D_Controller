@@ -7,13 +7,15 @@
  *      Author: Sam
  */
 
+#include "../../myutils/console.h"
+
 #include <string.h>  // for NULL
 #include <stdlib.h>  // for atoi and itoa (though this code implement a version of that)
 #include <stdbool.h>
-#include "console.h"
-#include "console_io.h"
-#include "console_commands.h"
-#include "app.h"
+
+#include "../../myutils/app.h"
+#include "../../myutils/console_commands.h"
+#include "../../myutils/console_io.h"
 
 #ifndef MIN
 #define MIN(X, Y) (((X) < (Y)) ? (X) : (Y))

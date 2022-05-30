@@ -5,8 +5,8 @@
  *      Author: Sam
  */
 
-#ifndef SRC_MYUTILS_MY_GRAPHICS_H_
-#define SRC_MYUTILS_MY_GRAPHICS_H_
+#ifndef MYUTILS_MY_GRAPHICS_H_
+#define MYUTILS_MY_GRAPHICS_H_
 
 #include "stdio.h"
 #include <stdbool.h>
@@ -22,4 +22,4 @@
 void prepareDisplay(void);
 void clearScreen(void);
 
-#endif /* SRC_MYUTILS_MY_GRAPHICS_H_ */
+#endif /* MYUTILS_MY_GRAPHICS_H_ */

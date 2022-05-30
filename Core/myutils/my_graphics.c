@@ -5,7 +5,8 @@
  *      Author: Sam
  */
 
-#include "my_graphics.h"
+#include "../../myutils/my_graphics.h"
+
 #include "stm32f429i_discovery.h"
 #include "stm32f429i_discovery_lcd.h"
 #include "stm32f429i_discovery_ts.h"

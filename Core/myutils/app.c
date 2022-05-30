@@ -5,8 +5,9 @@
  *      Author: Sam
  */
 
-#include "app.h"
-#include "my_graphics.h"
+#include "../../myutils/app.h"
+
+#include "../../myutils/my_graphics.h"
 
 void appInit(void) {
   prepareDisplay();

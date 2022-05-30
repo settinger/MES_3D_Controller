@@ -40,10 +40,12 @@
 #include "stm32f429i_discovery_lcd.h"
 #include "stm32f429i_discovery_ts.h"
 #include "stm32f429i_discovery_gyroscope.h"
-#include "touchscreen.h"
-#include "console.h"
-#include "app.h"
-#include "button.h"
+
+#include "../myutils/app.h"
+#include "../myutils/button.h"
+#include "../myutils/console.h"
+#include "../myutils/touchscreen.h"
+#include "lis3dsh.h"
 
 /* USER CODE END Includes */
 
@@ -223,6 +225,11 @@ int main(void)
   }
 
   // Enable accelerometer
+  // LIS2DH connected to SPI5
+  // PF7 - SCK
+  // PF8 - Sensor data out
+  // PF9 - Sensor data in
+  // ??? - Chip select
 
   // Enable sensor-fusion somethingorother
 
