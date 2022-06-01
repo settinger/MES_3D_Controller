@@ -234,6 +234,9 @@ int main(void) {
   // PF6 - Chip select
   accel_init();
 
+  // Set up double-tap on accelerometer
+  accel_tap_init();
+
   // Enable sensor-fusion somethingorother
 
   // Enable USB HID operations
