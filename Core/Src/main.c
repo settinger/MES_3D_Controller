@@ -257,6 +257,11 @@ int main(void) {
   /* USER CODE BEGIN WHILE */
   while (1) {
     nextTick = HAL_GetTick();
+    // Every 4 milliseconds, run accel_check_tap
+    if ((nextTick - lastFrameTick) > 4) {
+      lastFrameTick = nextTick;
+      accel_check_tap();
+    }
 
     // If two seconds have elapsed, update gyro
     if ((APP_NORMAL == appState) && ((nextTick - lastSecondTick) > 2000)) {
@@ -266,8 +271,8 @@ int main(void) {
       accel_getValues();
       char gyrotext[200];
       sprintf(gyrotext, "Gyro [DPS]:%4.2f\t%4.2f\t%4.2f",
-          //gyro[0], gyro[1], gyro[2]);
-          gyro[0]*0.001, gyro[1]*0.001, gyro[2]*0.001);
+      //gyro[0], gyro[1], gyro[2]);
+          gyro[0] * 0.001, gyro[1] * 0.001, gyro[2] * 0.001);
       ConsoleSendLine(gyrotext);
       lastSecondTick += 2000;
     }

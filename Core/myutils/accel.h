@@ -14,6 +14,7 @@
 void accel_init(void);
 void accel_getValues(void);
 void accel_tap_init(void);
+void accel_check_tap(void);
 
 static int32_t platform_write(void *handle, uint8_t reg, const uint8_t *bufp,
     uint16_t len);
