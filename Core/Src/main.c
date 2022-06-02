@@ -257,7 +257,7 @@ int main(void) {
   /* USER CODE BEGIN WHILE */
   while (1) {
     nextTick = HAL_GetTick();
-    // Every 4 milliseconds, run accel_check_tap
+    // Every 5 milliseconds, run accel_check_tap
     if ((nextTick - lastFrameTick) > 4) {
       lastFrameTick = nextTick;
       accel_check_tap();
