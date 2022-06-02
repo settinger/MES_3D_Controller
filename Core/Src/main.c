@@ -17,6 +17,7 @@
  */
 /* USER CODE END Header */
 /* Includes ------------------------------------------------------------------*/
+
 #include "main.h"
 #include "crc.h"
 #include "dma2d.h"
@@ -32,7 +33,7 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-
+#include "stm32f429xx.h"
 #include <stdlib.h>
 #include "string.h"
 #include "stdio.h"
@@ -46,6 +47,12 @@
 #include "console.h"
 #include "touchscreen.h"
 #include "accel.h"
+#include "kinematics.h"
+
+///* Extended Kalman Filter tinyEKF by Simon D Levy */
+//#define Nsta 12  // Number of state variables for extended Kalman filter: xyzθϕψ, 1st and 2nd derivatives of xyzθϕψ
+//#define Mobs  6  // Number of observations for extended Kalman filter: 2nd derivatives of xyz, 1st derivatives of θϕψ
+//#include "TinyEKF.h"
 
 /* USER CODE END Includes */
 
@@ -77,6 +84,8 @@ TS_StateTypeDef TS_State;               // Touchscreen struct
 structAppState appState;                   // State of game
 uint16_t touchStateTransition = 0;    // Counter for touch state event detection
 void (*checkTouch)(void);               // Function pointer for touch states
+
+//Kalman kalmanTheta; // A filter instance, why are there two in the demo
 
 /* USER CODE END PV */
 
@@ -237,7 +246,11 @@ int main(void) {
   // Set up double-tap on accelerometer
   accel_tap_init();
 
-  // Enable sensor-fusion somethingorother
+  // Set the initial values for the Kalman filter to work from
+  HAL_Delay(100); // Wait for sensors to stabilize
+  // TODO: Get the obsv readings here
+
+  // kalmanTheta.setAngle(roll);
 
   // Enable USB HID operations
 
