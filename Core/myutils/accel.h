@@ -24,4 +24,6 @@ static void tx_com(uint8_t *tx_buffer, uint16_t len);
 static void platform_delay(uint32_t ms);
 static void platform_init(void);
 
+void accel_read(float *accelStruct);
+
 #endif /* MYUTILS_ACCEL_H_ */

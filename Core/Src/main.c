@@ -47,12 +47,7 @@
 #include "console.h"
 #include "touchscreen.h"
 #include "accel.h"
-#include "kinematics.h"
-
-///* Extended Kalman Filter tinyEKF by Simon D Levy */
-//#define Nsta 12  // Number of state variables for extended Kalman filter: xyzθϕψ, 1st and 2nd derivatives of xyzθϕψ
-//#define Mobs  6  // Number of observations for extended Kalman filter: 2nd derivatives of xyz, 1st derivatives of θϕψ
-//#include "TinyEKF.h"
+#include "mykalman.h"
 
 /* USER CODE END Includes */
 
@@ -85,7 +80,9 @@ structAppState appState;                   // State of game
 uint16_t touchStateTransition = 0;    // Counter for touch state event detection
 void (*checkTouch)(void);               // Function pointer for touch states
 
-//Kalman kalmanTheta; // A filter instance, why are there two in the demo
+//float accel_mg[3];
+//float gyro[3] = { 0 };
+sensors_t boardSensors;
 
 /* USER CODE END PV */
 
@@ -229,6 +226,7 @@ int main(void) {
   // Each digit is nominally 17.50 millidegrees per second
   // I *think* it's got a nominal sampling rate of 100 Hz?
   // Results are 16 bit
+  // Axes: +X to board right, +Y to board top, +Z out of board
   if (GYRO_OK == BSP_GYRO_Init()) {
     ConsoleSendLine("Gyro initialized.");
   } else {
@@ -241,16 +239,15 @@ int main(void) {
   // PF8 - Sensor data out
   // PF9 - Sensor data in
   // PF6 - Chip select
+  // Axes: +X to board left, +Y to board top, +Z into board
   accel_init();
 
   // Set up double-tap on accelerometer
-  accel_tap_init();
+  //accel_tap_init();
 
   // Set the initial values for the Kalman filter to work from
   HAL_Delay(100); // Wait for sensors to stabilize
   // TODO: Get the obsv readings here
-
-  // kalmanTheta.setAngle(roll);
 
   // Enable USB HID operations
 
@@ -262,7 +259,6 @@ int main(void) {
   appInit();
   checkTouch = &clearIdle;
   appState = APP_NORMAL;
-  float gyro[3] = { 0 };
 
   /* USER CODE END 2 */
 
@@ -271,11 +267,21 @@ int main(void) {
   while (1) {
     nextTick = HAL_GetTick();
     // Every 5 milliseconds, run accel_check_tap
-    if ((nextTick - lastFrameTick) > 4) {
+    if ((nextTick - lastFrameTick) > 100) {
+      getReadings(&boardSensors, (nextTick - lastFrameTick));
+      char texxxt[100];
+      sprintf(texxxt, "Pitch: %3.2f; Roll: %3.2f", boardSensors.KalmanAngleX*57.3, boardSensors.KalmanAngleY*57.3);
+      ConsoleSendLine(texxxt);
+      //accel_check_tap();
+      //accel_getValues();
+//      accel_read(accel_mg);
+//      char timestamp[8];
+//      sprintf(timestamp, "%d", (int)(nextTick - lastFrameTick));
+//      ConsoleSendLine(timestamp);
       lastFrameTick = nextTick;
-      accel_check_tap();
     }
 
+    /*
     // If two seconds have elapsed, update gyro
     if ((APP_NORMAL == appState) && ((nextTick - lastSecondTick) > 2000)) {
       // Update clock time
@@ -321,6 +327,7 @@ int main(void) {
         appState = buttonProcess(appState);
       }
     }
+    */
 
     /* USER CODE END WHILE */
 

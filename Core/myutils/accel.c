@@ -83,13 +83,36 @@ void accel_getValues(void) {
     memset(data_raw_acceleration, 0x00, 3 * sizeof(int16_t));
     lis2dh_acceleration_raw_get(&dev_ctx, data_raw_acceleration);
 
+//    acceleration_mg[0] = lis2dh_from_fs2_nm_to_mg(data_raw_acceleration[0]);
+//    acceleration_mg[1] = lis2dh_from_fs2_nm_to_mg(data_raw_acceleration[1]);
+//    acceleration_mg[2] = lis2dh_from_fs2_nm_to_mg(data_raw_acceleration[2]);
+//    sprintf((char*) tx_buffer, "Acceleration [mg]:%4.2f\t%4.2f\t%4.2f",
     acceleration_mg[0] = lis2dh_from_fs2_nm_to_mg(data_raw_acceleration[0]);
     acceleration_mg[1] = lis2dh_from_fs2_nm_to_mg(data_raw_acceleration[1]);
     acceleration_mg[2] = lis2dh_from_fs2_nm_to_mg(data_raw_acceleration[2]);
-    sprintf((char*) tx_buffer, "Acceleration [mg]:%4.2f\t%4.2f\t%4.2f",
-        acceleration_mg[0], acceleration_mg[1], acceleration_mg[2]);
-    ConsoleSendLine((char*) tx_buffer);
+    char buff[200];
+    sprintf(buff, "%1.5f,%1.5f,%1.5f,", acceleration_mg[0] * .001,
+        acceleration_mg[1] * .001, acceleration_mg[2] * .001);
+    ConsoleSendString(buff);
   }
+}
+
+// Match accelerometer's axes to my definition of the board's axes (remember accel is mounted on the back)
+// Accelerometer: +X toward board right, +Y toward board down, +Z into board
+// Desired: +X toward right of board, +Y toward top, +Z out of board
+void accel_read(float *accelStruct) {
+  lis2dh_reg_t reg;
+  lis2dh_xl_data_ready_get(&dev_ctx, &reg.byte);
+
+  if (reg.byte) {
+    memset(data_raw_acceleration, 0x00, 3 * sizeof(int16_t));
+    lis2dh_acceleration_raw_get(&dev_ctx, data_raw_acceleration);
+
+    accelStruct[0] = lis2dh_from_fs2_nm_to_mg(data_raw_acceleration[0]);
+    accelStruct[1] = -1*lis2dh_from_fs2_nm_to_mg(data_raw_acceleration[1]);
+    accelStruct[2] = -1*lis2dh_from_fs2_nm_to_mg(data_raw_acceleration[2]);
+  }
+
 }
 
 void accel_tap_init(void) {
