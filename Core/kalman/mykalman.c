@@ -1,5 +1,7 @@
 /*
  * mykalman.c
+ * Largely based on the MPU6050 library by Konstantin Bulanov: https://github.com/leech001/MPU6050
+ * That library is released under a GNU GPL v3.0 license.
  *
  *  Created on: Jun 3, 2022
  *      Author: Sam
