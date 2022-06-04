@@ -267,35 +267,35 @@ int main(void) {
   while (1) {
     nextTick = HAL_GetTick();
     // Every 5 milliseconds, run accel_check_tap
-    if ((nextTick - lastFrameTick) > 100) {
+    if ((nextTick - lastFrameTick) >= 5) {
       getReadings(&boardSensors, (nextTick - lastFrameTick));
-      char texxxt[100];
-      sprintf(texxxt, "Pitch: %3.2f; Roll: %3.2f", boardSensors.KalmanAngleX*57.3, boardSensors.KalmanAngleY*57.3);
-      ConsoleSendLine(texxxt);
       //accel_check_tap();
-      //accel_getValues();
-//      accel_read(accel_mg);
-//      char timestamp[8];
-//      sprintf(timestamp, "%d", (int)(nextTick - lastFrameTick));
-//      ConsoleSendLine(timestamp);
+
+      char texxxt[100];
+      //sprintf(texxxt, "Pitch: %3.2f; Roll: %3.2f", boardSensors.KalmanAngleX, boardSensors.KalmanAngleY);
+      sprintf(texxxt, "%4.2f,%4.2f", boardSensors.KalmanAngleX, boardSensors.KalmanAngleY);
+      ConsoleSendLine(texxxt);
       lastFrameTick = nextTick;
     }
 
+
     /*
     // If two seconds have elapsed, update gyro
-    if ((APP_NORMAL == appState) && ((nextTick - lastSecondTick) > 2000)) {
-      // Update clock time
-      BSP_GYRO_GetXYZ(gyro);
-      // Todo: figure out what XYZ correspond to
-      accel_getValues();
-      char gyrotext[200];
-      sprintf(gyrotext, "Gyro [DPS]:%4.2f\t%4.2f\t%4.2f",
-      //gyro[0], gyro[1], gyro[2]);
-          gyro[0] * 0.001, gyro[1] * 0.001, gyro[2] * 0.001);
-      ConsoleSendLine(gyrotext);
-      lastSecondTick += 2000;
-    }
+    if ((APP_NORMAL == appState) && ((nextTick - lastSecondTick) > 1000)) {
 
+
+//      // Update clock time
+//      BSP_GYRO_GetXYZ(gyro);
+//      // Todo: figure out what XYZ correspond to
+//      accel_getValues();
+//      char gyrotext[200];
+//      sprintf(gyrotext, "Gyro [DPS]:%4.2f\t%4.2f\t%4.2f",
+//      //gyro[0], gyro[1], gyro[2]);
+//          gyro[0] * 0.001, gyro[1] * 0.001, gyro[2] * 0.001);
+//      ConsoleSendLine(gyrotext);
+
+      lastSecondTick += 1000;
+    }
     // Idle so screen is drawn at (at most) 50 FPS
     if ((nextTick - lastFrameTick) > FRAME_DELAY) {
       lastFrameTick = nextTick;
