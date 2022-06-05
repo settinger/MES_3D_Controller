@@ -1,10 +1,5 @@
 const scene = new THREE.Scene();
-const camera = new THREE.PerspectiveCamera(
-  75,
-  window.innerWidth / window.innerHeight,
-  0.1,
-  1000
-);
+
 // Axes in Frame N (inertial reference frame)
 const Nx = new THREE.Vector3(1, 0, 0);
 const Ny = new THREE.Vector3(0, 1, 0);
@@ -13,28 +8,46 @@ const N0 = new THREE.Vector3(0, 0, 0);
 const origPosition = new THREE.Vector3(0, 2, 0);
 const origRotation = new THREE.Euler(0, 0, 0);
 
+// Define camera and lighting
+const camera = new THREE.PerspectiveCamera(
+  75,
+  window.innerWidth / window.innerHeight,
+  0.1,
+  1000
+);
+camera.position.set(2, 2, 5);
+camera.lookAt(N0);
+const light = new THREE.DirectionalLight(0xffffff, 1);
+light.position.set(4, 2, 5);
+scene.add(light);
+//const light2 = new THREE.AmbientLight(0xffffff, 1);
+//scene.add(light2);
+
 const renderer = new THREE.WebGLRenderer();
 renderer.setSize(window.innerWidth, window.innerHeight);
 document.body.appendChild(renderer.domElement);
 
-const geometry = new THREE.BoxGeometry(1, 1, 1);
-const material = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
-const cube = new THREE.Mesh(geometry, material);
-cube.position.set(...origPosition);
-cube.rotation.set(...origRotation);
+const geometry = new THREE.BoxGeometry(0.4, 0.4, 0.4);
+const cursorGeo = new THREE.SphereGeometry(0.2);
+const surfaceGeo = new THREE.SphereGeometry(2);
+const material = new THREE.MeshLambertMaterial({
+  color: 0x00ff00,
+});
+const material2 = new THREE.MeshLambertMaterial({
+  color: 0xffffff,
+  opacity: 0.5,
+  transparent: true,
+});
+const cursor = new THREE.Mesh(cursorGeo, material);
+const surface = new THREE.Mesh(surfaceGeo, material2);
+const axesN = new THREE.AxesHelper(5);
+const axesB = new THREE.AxesHelper(1);
+scene.add(cursor);
+scene.add(axesN);
+scene.add(surface);
+cursor.add(axesB);
 
-scene.add(cube);
-const NFrame = new THREE.AxesHelper(5);
-scene.add(NFrame);
-const cubeFrame = new THREE.AxesHelper(2);
-cube.add(cubeFrame);
-
-camera.position.z = 5;
-camera.position.y = 2;
-camera.position.x = 2;
-camera.lookAt(N0);
-
-renderer.render(scene, camera);
+cursor.position.x = 2;
 
 // I can't believe "rotateOnWorldAxis" just doesn't work and people accept that
 const rotateInertial = (object, axis, angle, point = N0) => {
@@ -62,7 +75,14 @@ const setAngleInertial = (object, theta, phi, point = N0) => {
   object.position.add(point);
 };
 
-const orient = (θ, φ) => {
-  setAngleInertial(cube, (θ * Math.PI) / 180, (φ * Math.PI) / 180);
+let theta = 0;
+let phi = 0;
+
+function animate() {
+  requestAnimationFrame(animate);
+  theta += 0.009;
+  phi += 0.01;
+  setAngleInertial(cursor, theta, phi);
   renderer.render(scene, camera);
-};
+}
+animate();

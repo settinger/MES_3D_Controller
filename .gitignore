@@ -73,3 +73,9 @@ local.properties
 
 [Dd]ebug/
 [Rr]elease/
+
+
+# Ignore VS Code typings and things
+webclient/.vscode/
+webclient/node_modules/
+webclient/*.json
