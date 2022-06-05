@@ -30,7 +30,10 @@ async function readUntilClosed() {
           stream += glyph;
           if (glyph == "\n" || glyph == "\0") {
             console.log(stream);
-            orient(...stream.split(","));
+            if (stream.startsWith("^")) {
+              stream.substring(1);
+              orient(...stream.substring(1).split(","));
+            }
             stream = "";
           }
         }

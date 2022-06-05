@@ -260,6 +260,8 @@ int main(void) {
   checkTouch = &clearIdle;
   appState = APP_NORMAL;
 
+  ConsoleSendLine("^0.0,0.0,0.0"); // This will reset the orientation of the cube on the web client end
+
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -267,13 +269,13 @@ int main(void) {
   while (1) {
     nextTick = HAL_GetTick();
     // Every 5 milliseconds, run accel_check_tap
-    if ((nextTick - lastFrameTick) >= 5) {
+    if ((nextTick - lastFrameTick) >= 25) {
       getReadings(&boardSensors, (nextTick - lastFrameTick));
       //accel_check_tap();
 
       char texxxt[100];
       //sprintf(texxxt, "Pitch: %3.2f; Roll: %3.2f", boardSensors.KalmanAngleX, boardSensors.KalmanAngleY);
-      sprintf(texxxt, "%4.2f,%4.2f", boardSensors.KalmanAngleX, boardSensors.KalmanAngleY);
+      sprintf(texxxt, "^%4.2f,%4.2f", boardSensors.KalmanEstimatedTheta, boardSensors.KalmanEstimatedPhi);
       ConsoleSendLine(texxxt);
       lastFrameTick = nextTick;
     }

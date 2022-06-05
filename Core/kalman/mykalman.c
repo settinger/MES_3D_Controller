@@ -20,51 +20,89 @@ uint32_t timer;
 float acceleration_mg[3];
 float gyro_mdps[3];
 
-Kalman_t KalmanX = { .Q_angle = 0.001f, .Q_bias = 0.003f, .R_measure = 0.03f };
+Kalman_t KalmanTheta = { .Q_angle = 0.001f, .Q_bias = 0.003f,
+    .R_measure = 0.03f, angle = 0.0 };
 
-Kalman_t KalmanY = { .Q_angle = 0.001f, .Q_bias = 0.003f, .R_measure = 0.03f };
-
+Kalman_t KalmanPhi = { .Q_angle = 0.001f, .Q_bias = 0.003f, .R_measure = 0.03f,
+    angle = 0.0 };
 
 void getReadings(sensors_t *sensorStruct, uint32_t t) {
   accel_read(acceleration_mg);
   BSP_GYRO_GetXYZ(gyro_mdps);
 
-  sensorStruct->Ax = acceleration_mg[0]/1000; // Unit: g (~9.8 m/s^2)
-  sensorStruct->Ay = acceleration_mg[1]/1000; // Unit: g (~9.8 m/s^2)
-  sensorStruct->Az = acceleration_mg[2]/1000; // Unit: g (~9.8 m/s^2)
-  sensorStruct->Gx = gyro_mdps[0]/1000; // Unit: degrees per second
-  sensorStruct->Gy = gyro_mdps[1]/1000; // Unit: degrees per second
-  sensorStruct->Gz = gyro_mdps[2]/1000; // Unit: degrees per second
+  /*
+   * This is obnoxious but I may need to compensate for the fact that
+   * three.js camera only supports +Z out of screen, +Y up, +X right.
+   * This should make the axes match when the board is being held with
+   * the USB-mini cable toward the ceiling.
+   */
+  sensorStruct->Ax = acceleration_mg[0] / 1000; // Unit: g (~9.8 m/s^2)
+  sensorStruct->Ay = acceleration_mg[1] / 1000; // Unit: g (~9.8 m/s^2)
+  sensorStruct->Az = acceleration_mg[2] / 1000; // Unit: g (~9.8 m/s^2)
+  sensorStruct->Gx = gyro_mdps[0] / 1000; // Unit: degrees per second
+  sensorStruct->Gy = gyro_mdps[1] / 1000; // Unit: degrees per second
+  sensorStruct->Gz = gyro_mdps[2] / 1000; // Unit: degrees per second
 
-  // Kalman angle solve
   float dt = (float) (t) / 1000; // Unit: seconds
 
-  float roll = 0.0;
-  float accel_norm = sqrtf(
-      sensorStruct->Ax * sensorStruct->Ax
-          + sensorStruct->Ay * sensorStruct->Ay
+  /*
+   * Begin Kalman filter
+   * State estimation: use accelerometer data to get naive
+   * values for theta and phi
+   */
+
+  /*
+   * Compute phi from accelerometers, return result in degrees
+   * When holding the board upright with USB-mini pointed toward the
+   * ceiling and screen toward the user, phi is measured as the angle
+   * between the board's Y axis and gravity.
+   * This assumes the force of gravity is much greater than the force
+   * being applied by the user to the controller.
+   *
+   */
+  float phi = 0.0;
+  float force_magnitude = sqrtf(
+      sensorStruct->Ax * sensorStruct->Ax + sensorStruct->Ay * sensorStruct->Ay
           + sensorStruct->Az * sensorStruct->Az);
-  if (accel_norm != 0.0) {
-    roll = atanf(sensorStruct->Ay / accel_norm) * RAD_TO_DEG;
+  if (force_magnitude != 0.0) {
+    phi = acosf(sensorStruct->Ay / force_magnitude) * RAD_TO_DEG;
   }
 
-  float pitch = atan2f(sensorStruct->Ax, sensorStruct->Az) * RAD_TO_DEG;
-  if ((pitch < -90 && sensorStruct->KalmanAngleY > 90)
-      || (pitch > 90 && sensorStruct->KalmanAngleY)) {
-    KalmanY.angle = pitch;
-    sensorStruct->KalmanAngleY = pitch;
-  } else {
-    sensorStruct->KalmanAngleY = Kalman_getAngle(&KalmanY, pitch,
-        sensorStruct->Gy, dt);
-  }
-  if (fabsf(sensorStruct->KalmanAngleY) > 90) {
-    sensorStruct->Gx = -sensorStruct->Gx;
-  }
-  sensorStruct->KalmanAngleX = Kalman_getAngle(&KalmanX, roll,
-      sensorStruct->Gx, dt);
+  /*
+   * Compute theta from accelerometers, return result in degrees
+   * Theta is measured as the angle made by the X-axis acceleration
+   * component and the Z-axis acceleration component.
+   */
+  float theta = atan2f(sensorStruct->Ax, sensorStruct->Az) * RAD_TO_DEG;
+
+  // Apply corrections to theta/phi estimates (TODO: why here? shouldn't this be done to the newly calculated states instead?)
+   if ((theta < -90 && sensorStruct->KalmanEstimatedPhi > 90)
+   || (theta > 90 && sensorStruct->KalmanEstimatedPhi < -90)) {
+   KalmanTheta.angle = theta;
+   sensorStruct->KalmanEstimatedTheta = theta;
+   } else {
+   sensorStruct->KalmanEstimatedTheta = Kalman_getAngle(&KalmanTheta, theta,
+   sensorStruct->Gx, dt);
+   }
+
+   // Correct for Gx overflow (TODO: why?)
+   if (fabsf(sensorStruct->KalmanEstimatedPhi) > 90) {
+   sensorStruct->Gx = -sensorStruct->Gx;
+   }
+
+
+  /*
+   * Update steps performed here and commented within the function
+   */
+  sensorStruct->KalmanEstimatedPhi = kalmanUpdate(&KalmanPhi, phi,
+      FILLTHISINLATER);
+  //sensorStruct->KalmanEstimatedTheta = kalmanUpdate(&KalmanTheta, theta, sensorStruct->Gx, dt);
 }
 
-float Kalman_getAngle(Kalman_t *Kalman, float newAngle, float newRate, float dt) {
+/*
+ * The update steps of the Kalman filter process
+ */
+float kalmanUpdate(Kalman_t *Kalman, float newAngle, float newRate, float dt) {
   float rate = newRate - Kalman->bias;
   Kalman->angle += dt * rate;
 
@@ -81,8 +119,8 @@ float Kalman_getAngle(Kalman_t *Kalman, float newAngle, float newRate, float dt)
   K[1] = Kalman->P[1][0] / S;
 
   float y = newAngle - Kalman->angle;
-  Kalman->angle += K[0]*y;
-  Kalman->bias += K[1]*y;
+  Kalman->angle += K[0] * y;
+  Kalman->bias += K[1] * y;
 
   float P00_temp = Kalman->P[0][0];
   float P01_temp = Kalman->P[0][1];
