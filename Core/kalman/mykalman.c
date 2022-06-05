@@ -14,6 +14,8 @@
 #include "stm32f429i_discovery_gyroscope.h"
 #include <math.h>
 
+#include "console.h" // TODO: TAKE THIS OUT
+
 #define PI 3.141592f
 #define HALFPI 1.570796f
 #define RAD_TO_DEG 180/PI
@@ -65,13 +67,6 @@ void getReadings(sensors_t *sensorStruct, uint32_t t) {
    * between the board's Y axis and gravity.
    * This assumes the force of gravity is much greater than the force
    * being applied by the user to the controller.
-   *
-   */
-
-  /* NOTE TO SELF
-   * When NXP says "+X" think "-X"
-   * When NXP says "+Y" think "-Z"
-   * When NXP says "+Z" think "-Y"
    */
   float phi = 0.0;
   float force_magnitude = sqrtf(
@@ -96,23 +91,24 @@ void getReadings(sensors_t *sensorStruct, uint32_t t) {
    * extend beyond those; in such circumstances we forgo Kalman updates
    * and handle the discontinuities another way.
    */
-  if ((phi < -90 && sensorStruct->KalmanEstimatedPhi > 90)
-      || (phi > 90 && sensorStruct->KalmanEstimatedPhi < 90)) {
+
+  if ((phi < -90 && sensorStruct->KalmanStatePhi > 90)
+      || (phi > 90 && sensorStruct->KalmanStatePhi < 90)) {
     KalmanPhi.angle = phi;
-    sensorStruct->KalmanEstimatedPhi = phi;
+    sensorStruct->KalmanStatePhi = phi;
   } else {
-    sensorStruct->KalmanEstimatedPhi = kalmanUpdate(&KalmanPhi, phi,
-        -1 * sensorStruct->Gx, dt);
+    sensorStruct->KalmanStatePhi = kalmanUpdate(&KalmanPhi, phi,
+        -sensorStruct->Gx, dt);
   }
 
   // If phi goes too high or low, set the observed rate back to keep it within limits
   // This feels hacky and fishy to me and I don't get why the original authors did this
-  if (fabsf(sensorStruct->KalmanEstimatedPhi) > 90) {
+  if (fabsf(sensorStruct->KalmanStatePhi) > 90) {
     sensorStruct->Gz = -1 * sensorStruct->Gz;
   }
 
-  sensorStruct->KalmanEstimatedTheta = kalmanUpdate(&KalmanTheta, theta,
-      -1 * sensorStruct->Gz, dt);
+  sensorStruct->KalmanStateTheta = kalmanUpdate(&KalmanTheta, theta,
+      sensorStruct->Gz, dt);
 }
 
 /*
@@ -153,4 +149,23 @@ float kalmanUpdate(Kalman_t *Kalman, float newAngle, float newRate, float dt) {
   Kalman->P[1][1] -= K[1] * P01_temp;
 
   return Kalman->angle;
+}
+
+/*
+ * Closest Wrap - a hacky way to do away with discontinuties due to trig functions being limited to [-pi, pi]
+ * If the angle is in [0, 360], the closest wrap-around angle is 180 degrees; if the angle is [360, 720],
+ * closest is 540, and so on. Same with negative values: [-360, 0] yields -180; [-720, -360] yields -540.
+ */
+
+float closestWrap(float angle) {
+  int steps = 0;
+  while (angle < 0) {
+    steps--;
+    angle += 360;
+  }
+  while (angle > 360) {
+    steps++;
+    angle -= 360;
+  }
+  return (float) (180 + steps * 360);
 }

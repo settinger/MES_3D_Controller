@@ -275,7 +275,7 @@ int main(void) {
 
       char texxxt[100];
       //sprintf(texxxt, "Pitch: %3.2f; Roll: %3.2f", boardSensors.KalmanAngleX, boardSensors.KalmanAngleY);
-      sprintf(texxxt, "^%4.2f,%4.2f", boardSensors.KalmanEstimatedTheta, boardSensors.KalmanEstimatedPhi);
+      sprintf(texxxt, "^%4.2f,%4.2f", boardSensors.KalmanStateTheta, boardSensors.KalmanStatePhi);
       ConsoleSendLine(texxxt);
       lastFrameTick = nextTick;
     }

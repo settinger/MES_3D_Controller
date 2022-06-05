@@ -44,7 +44,8 @@ void accel_init(void) {
   // Enable block data update
   lis2dh_block_data_update_set(&dev_ctx, PROPERTY_ENABLE);
   // Set output data rate to 1Hz (this gets overwritten as soon as tap_config is run)
-  lis2dh_data_rate_set(&dev_ctx, LIS2DH_ODR_1Hz);
+  //lis2dh_data_rate_set(&dev_ctx, LIS2DH_ODR_1Hz);
+  lis2dh_data_rate_set(&dev_ctx, LIS2DH_ODR_400Hz);
   // Set scale to +/- 2g
   lis2dh_full_scale_set(&dev_ctx, LIS2DH_2g);
   // leave device in continuous mode with 10 bit resolution
@@ -98,7 +99,7 @@ void accel_getValues(void) {
 }
 
 // Match accelerometer's axes to my definition of the board's axes (remember accel is mounted on the back)
-// Accelerometer: +X toward board right, +Y toward board down, +Z into board
+// Accelerometer: +X toward board down, +Y toward board left, +Z into board
 // Desired: +X toward right of board, +Y toward top, +Z out of board
 void accel_read(float *accelStruct) {
   lis2dh_reg_t reg;
@@ -108,8 +109,8 @@ void accel_read(float *accelStruct) {
     memset(data_raw_acceleration, 0x00, 3 * sizeof(int16_t));
     lis2dh_acceleration_raw_get(&dev_ctx, data_raw_acceleration);
 
-    accelStruct[0] = lis2dh_from_fs2_nm_to_mg(data_raw_acceleration[0]);
-    accelStruct[1] = -1*lis2dh_from_fs2_nm_to_mg(data_raw_acceleration[1]);
+    accelStruct[0] = -1*lis2dh_from_fs2_nm_to_mg(data_raw_acceleration[1]);
+    accelStruct[1] = -1*lis2dh_from_fs2_nm_to_mg(data_raw_acceleration[0]);
     accelStruct[2] = -1*lis2dh_from_fs2_nm_to_mg(data_raw_acceleration[2]);
   }
 

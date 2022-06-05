@@ -22,8 +22,8 @@ typedef struct {
   float Gy;
   float Gz;
 
-  float KalmanEstimatedTheta;
-  float KalmanEstimatedPhi;
+  float KalmanStateTheta;
+  float KalmanStatePhi;
 } sensors_t;
 
 // Kalman struct
@@ -38,5 +38,6 @@ typedef struct {
 
 void getReadings(sensors_t *sensorStruct, uint32_t t);
 float kalmanUpdate(Kalman_t *Kalman, float newAngle, float newRate, float dt);
+float closestWrap(float angle);
 
 #endif /* KALMAN_MYKALMAN_H_ */
