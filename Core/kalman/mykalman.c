@@ -3,6 +3,8 @@
  * Largely based on the MPU6050 library by Konstantin Bulanov: https://github.com/leech001/MPU6050
  * That library is released under a GNU GPL v3.0 license.
  *
+ * Also using this application note from NXP: https://www.nxp.com/files-static/sensors/doc/app_note/AN3461.pdf
+ *
  *  Created on: Jun 3, 2022
  *      Author: Sam
  */
@@ -21,10 +23,10 @@ float acceleration_mg[3];
 float gyro_mdps[3];
 
 Kalman_t KalmanTheta = { .Q_angle = 0.001f, .Q_bias = 0.003f,
-    .R_measure = 0.03f, angle = 0.0 };
+    .R_measure = 0.03f, .angle = 0.0f };
 
 Kalman_t KalmanPhi = { .Q_angle = 0.001f, .Q_bias = 0.003f, .R_measure = 0.03f,
-    angle = 0.0 };
+    .angle = 0.0 };
 
 void getReadings(sensors_t *sensorStruct, uint32_t t) {
   accel_read(acceleration_mg);
@@ -35,7 +37,12 @@ void getReadings(sensors_t *sensorStruct, uint32_t t) {
    * three.js camera only supports +Z out of screen, +Y up, +X right.
    * This should make the axes match when the board is being held with
    * the USB-mini cable toward the ceiling.
+   *
+   * Phi (roll) is defined as rotation along the X axis
+   * Theta (pitch) is defined as rotation along the Z axis
+   * Psi (yaw) is defined as rotation along the Y axis (initially aligned with gravity)
    */
+
   sensorStruct->Ax = acceleration_mg[0] / 1000; // Unit: g (~9.8 m/s^2)
   sensorStruct->Ay = acceleration_mg[1] / 1000; // Unit: g (~9.8 m/s^2)
   sensorStruct->Az = acceleration_mg[2] / 1000; // Unit: g (~9.8 m/s^2)
@@ -60,52 +67,63 @@ void getReadings(sensors_t *sensorStruct, uint32_t t) {
    * being applied by the user to the controller.
    *
    */
+
+  /* NOTE TO SELF
+   * When NXP says "+X" think "-X"
+   * When NXP says "+Y" think "-Z"
+   * When NXP says "+Z" think "-Y"
+   */
   float phi = 0.0;
   float force_magnitude = sqrtf(
       sensorStruct->Ax * sensorStruct->Ax + sensorStruct->Ay * sensorStruct->Ay
           + sensorStruct->Az * sensorStruct->Az);
   if (force_magnitude != 0.0) {
-    phi = acosf(sensorStruct->Ay / force_magnitude) * RAD_TO_DEG;
+    phi = atan2f(-1 * sensorStruct->Az, -1 * sensorStruct->Ay) * RAD_TO_DEG;
   }
 
   /*
    * Compute theta from accelerometers, return result in degrees
    * Theta is measured as the angle made by the X-axis acceleration
-   * component and the Z-axis acceleration component.
+   * component and the norm of the other two acceleration components.
    */
-  float theta = atan2f(sensorStruct->Ax, sensorStruct->Az) * RAD_TO_DEG;
-
-  // Apply corrections to theta/phi estimates (TODO: why here? shouldn't this be done to the newly calculated states instead?)
-   if ((theta < -90 && sensorStruct->KalmanEstimatedPhi > 90)
-   || (theta > 90 && sensorStruct->KalmanEstimatedPhi < -90)) {
-   KalmanTheta.angle = theta;
-   sensorStruct->KalmanEstimatedTheta = theta;
-   } else {
-   sensorStruct->KalmanEstimatedTheta = Kalman_getAngle(&KalmanTheta, theta,
-   sensorStruct->Gx, dt);
-   }
-
-   // Correct for Gx overflow (TODO: why?)
-   if (fabsf(sensorStruct->KalmanEstimatedPhi) > 90) {
-   sensorStruct->Gx = -sensorStruct->Gx;
-   }
-
+  float norm_YZ = sqrtf(
+      sensorStruct->Ay * sensorStruct->Ay
+          + sensorStruct->Az * sensorStruct->Az);
+  float theta = atan2f(-1 * sensorStruct->Ax, norm_YZ) * RAD_TO_DEG;
 
   /*
-   * Update steps performed here and commented within the function
+   * The above values are limited to [-180, 180] but existing state might
+   * extend beyond those; in such circumstances we forgo Kalman updates
+   * and handle the discontinuities another way.
    */
-  sensorStruct->KalmanEstimatedPhi = kalmanUpdate(&KalmanPhi, phi,
-      FILLTHISINLATER);
-  //sensorStruct->KalmanEstimatedTheta = kalmanUpdate(&KalmanTheta, theta, sensorStruct->Gx, dt);
+  if ((phi < -90 && sensorStruct->KalmanEstimatedPhi > 90)
+      || (phi > 90 && sensorStruct->KalmanEstimatedPhi < 90)) {
+    KalmanPhi.angle = phi;
+    sensorStruct->KalmanEstimatedPhi = phi;
+  } else {
+    sensorStruct->KalmanEstimatedPhi = kalmanUpdate(&KalmanPhi, phi,
+        -1 * sensorStruct->Gx, dt);
+  }
+
+  // If phi goes too high or low, set the observed rate back to keep it within limits
+  // This feels hacky and fishy to me and I don't get why the original authors did this
+  if (fabsf(sensorStruct->KalmanEstimatedPhi) > 90) {
+    sensorStruct->Gz = -1 * sensorStruct->Gz;
+  }
+
+  sensorStruct->KalmanEstimatedTheta = kalmanUpdate(&KalmanTheta, theta,
+      -1 * sensorStruct->Gz, dt);
 }
 
 /*
  * The update steps of the Kalman filter process
  */
 float kalmanUpdate(Kalman_t *Kalman, float newAngle, float newRate, float dt) {
+  // Predict next state using existing state and observed gyro data
   float rate = newRate - Kalman->bias;
   Kalman->angle += dt * rate;
 
+  // Predict the estimate covariance P
   Kalman->P[0][0] += dt
       * (dt * Kalman->P[1][1] - Kalman->P[0][1] - Kalman->P[1][0]
           + Kalman->Q_angle);
@@ -113,18 +131,22 @@ float kalmanUpdate(Kalman_t *Kalman, float newAngle, float newRate, float dt) {
   Kalman->P[1][0] -= dt * Kalman->P[1][1];
   Kalman->P[1][1] += Kalman->Q_bias * dt;
 
+  // Innovation covariance
   float S = Kalman->P[0][0] + Kalman->R_measure;
+
+  // Optimal Kalman gain
   float K[2];
   K[0] = Kalman->P[0][0] / S;
   K[1] = Kalman->P[1][0] / S;
 
+  // Measurement post-fit residual and state
   float y = newAngle - Kalman->angle;
   Kalman->angle += K[0] * y;
   Kalman->bias += K[1] * y;
 
+  // Updated estimate covariance
   float P00_temp = Kalman->P[0][0];
   float P01_temp = Kalman->P[0][1];
-
   Kalman->P[0][0] -= K[0] * P00_temp;
   Kalman->P[0][1] -= K[0] * P01_temp;
   Kalman->P[1][0] -= K[1] * P00_temp;

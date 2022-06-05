@@ -17,8 +17,12 @@ document.body.appendChild(renderer.domElement);
 
 const geometry = new THREE.BoxGeometry(1, 1, 1);
 const material = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
+const origPosition = new THREE.Vector3(0, 2, 0);
+const origRotation = new THREE.Euler(0, 0, 0);
 const cube = new THREE.Mesh(geometry, material);
-// cube.position.y = 2;
+cube.position.set(...origPosition);
+cube.rotation.set(...origRotation);
+
 scene.add(cube);
 const NFrame = new THREE.AxesHelper(5);
 scene.add(NFrame);
@@ -58,13 +62,15 @@ const setAngleInertial = (object, axis, angle, point = N0) => {
 
 const setAngleInertial2 = (object, theta, phi, point = N0) => {
   // Reset position in space
-  object.position.sub(point);
-  object.position.applyQuaternion(object.quaternion.invert());
+  object.position.set(...origPosition);
+  object.rotation.set(...origRotation);
+
   // Set cube rotation to new values
-  const eul = new THREE.Euler(theta, phi, 0, "XYZ");
-  cube.setRotationFromEuler(eul);
+  const eul = new THREE.Euler(phi, 0, theta, "XYZ");
+  object.setRotationFromEuler(eul);
 
   // Set cube position to new values
+  object.position.sub(point);
   object.position.applyEuler(eul);
   object.position.add(point);
 };
