@@ -1,42 +1,28 @@
-// Tools for creating and updating UV-map for the three.js object
+// Tools for creating and updating U-V map for the three.js object when the U-V map is an SVG
 
 let size = 2048;
-canvas = document.createElement("canvas");
-ctx = canvas.getContext("2d");
-canvas.id = "textureMap";
-canvas.width = size;
-canvas.height = size;
-canvas.style.display = "none";
-document.body.append(canvas);
 
-ctx.fillStyle = "white";
-ctx.fillRect(0, 0, size, size);
-ctx.fillStyle = "green";
-ctx.fillRect(0, 1024, size / 2, 104);
+let mySVG = newSVG("svg", {
+  width: size,
+  height: size,
+  viewBox: `0 0 ${size} ${size}`,
+});
 
-const createTexture = (size = 2048) => {};
+const rect1 = mySVG.appendSVG("rect", {
+  x: 0,
+  y: 0,
+  width: size,
+  height: size,
+  fill: "white",
+});
 
-let mySVG = document.createElementNS("http://www.w3.org/2000/svg", "svg");
-mySVG.setAttribute("width", 1024);
-mySVG.setAttribute("height", 1024);
-mySVG.setAttribute("viewBox", "0 0 1024 1024");
-//mySVG.style.display = "none";
-let blah = document.createElementNS("http://www.w3.org/2000/svg", "rect");
-mySVG.append(blah);
-blah.setAttribute("x", 0);
-blah.setAttribute("y", 0);
-blah.setAttribute("width", size);
-blah.setAttribute("height", size);
-blah.setAttribute("fill", "white");
-let blah2 = document.createElementNS("http://www.w3.org/2000/svg", "rect");
-mySVG.append(blah2);
-blah2.setAttribute("x", 0);
-blah2.setAttribute("y", 0);
-blah2.setAttribute("width", 512);
-blah2.setAttribute("height", 400);
-blah2.setAttribute("fill", "blue");
-
-//document.body.append(mySVG);
+const rect2 = mySVG.appendSVG("rect", {
+  x: 0,
+  y: 0,
+  width: 512,
+  height: 400,
+  fill: "blue",
+});
 
 /*
 UV MAPPING
@@ -45,3 +31,15 @@ x = 0 => θ = 0; x = size => θ = 2π
 y axis of canvas corresponds to φ (x-axis) on sphere
 y = 0 => φ = π; y = size => φ = -π
  */
+const θ2x = (θ) => (θ / (2 * Math.PI)) * size;
+const x2θ = (x) => (x / size) * 2 * Math.PI;
+const φ2y = (φ) => ((Math.PI - φ) * size) / (2 * Math.PI);
+const y2φ = (y) => Math.PI - (y / size) * 2 * Math.PI;
+
+// Draw a splotch of paint where the cursor currently is.
+// Due to the U-V mapping it won't be a perfect circle or square or anything
+const drawSplotch = (θ, φ) => {
+  // The center of the splotch is here, but due to mapping it should not just be a circle
+  let x = θ2x(θ);
+  let y = φ2y(φ);
+};

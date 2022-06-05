@@ -1,4 +1,9 @@
 try {
+  Object.defineProperty(String.prototype, "any", {
+    value: function () {
+      return Object.values(arguments).some((arg) => arg == this);
+    },
+  });
   Object.defineProperty(Element.prototype, "setAttributes", {
     value: function (attributes = {}) {
       for (let [key, value] of Object.entries(attributes)) {

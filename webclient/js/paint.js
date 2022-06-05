@@ -29,7 +29,7 @@ const texCallback = (texture) => {
 
 // Either load a bitmap texture OR an SVG texture
 const loader = new THREE.TextureLoader();
-if (true) {
+if (false) {
   const texture = loader.load(canvas.toDataURL("image/jpg"), texCallback);
 } else {
   const svgData = new XMLSerializer().serializeToString(mySVG);
