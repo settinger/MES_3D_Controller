@@ -14,7 +14,6 @@
 #include <stdbool.h>
 
 #include "app.h"
-#include "console_commands.h"
 #include "console_io.h"
 
 #ifndef MIN
@@ -111,46 +110,6 @@ structAppState ConsoleProcess(structAppState currentStatus) {
   return APP_NORMAL; // TODO: replace
 }
 
-/*
- * The C library itoa is sometimes a complicated function and the library costs
- * aren't worth it, so this implements the necessary parts for console.
- */
-#if CONSOLE_USE_BUILTIN_ITOA
-#define itoa smallItoa
-static void smallItoa(int in, char *outBuffer, int radix) {
-  bool isNegative = false;
-  int tmpIn;
-  int stringLen = 1u;  // String will be at least as long as the NULL character
-
-  if (in < 0) {
-    isNegative = true;
-    in = -in;
-    stringLen++;
-  }
-
-  // Get length of string to be composed
-  tmpIn = in;
-  while ((int) tmpIn / radix != 0) {
-    tmpIn = (int) tmpIn / radix;
-    stringLen++;
-  }
-
-  // Starting with NULL character, fill in string backwards
-  *(outBuffer + stringLen) = NULL_CHAR;
-  stringLen--;
-
-  tmpIn = in;
-  do {
-    *(outBuffer + stringLen) = (tmpIn % radix) + '0';
-    tmpIn = (int) (tmpIn / radix);
-  } while (stringLen--);
-
-  if (isNegative) {
-    *(outBuffer) = '-';
-  }
-}
-#endif
-
 /* ConsoleSendString
  * Send a null terminated string to the console.
  * This is a light wrapper around ConsoleIoSend. It uses the same
@@ -166,5 +125,75 @@ commandResult ConsoleSendString(const char *buffer) {
 commandResult ConsoleSendLine(const char *buffer) {
   ConsoleIoSend(buffer);
   ConsoleIoSend(ENDLINE);
+  return COMMAND_SUCCESS;
+}
+
+/*
+ * ConsoleCursorEuler
+ * Instructions of the form "^[theta],[phi]" tell the web client
+ * to set the cursor to that Euler angle
+ */
+commandResult ConsoleCursorEuler(float theta, float phi) {
+  char command[100];
+  sprintf(command, "^%4.2f,%4.2f", theta, phi);
+  ConsoleSendLine(command);
+  return COMMAND_SUCCESS;
+}
+
+/*
+ * ConsoleDrawEuler
+ * Instructions of the form "![theta],[phi]" tell the web client
+ * to draw a texture at that Euler angle without moving the cursor
+ */
+commandResult ConsoleDrawEuler(float theta, float phi) {
+  char command[100];
+  sprintf(command, "!%4.2f,%4.2f", theta, phi);
+  ConsoleSendLine(command);
+  return COMMAND_SUCCESS;
+}
+
+/*
+ * ConsoleDrawCursorEuler
+ * Instructions of the form "@[theta],[phi]" tell the web client
+ * to set the cursor to that Euler angle AND draw a texture there
+ */
+commandResult ConsoleDrawCursorEuler(float theta, float phi) {
+  char command[100];
+  sprintf(command, "@%4.2f,%4.2f", theta, phi);
+  ConsoleSendLine(command);
+  return COMMAND_SUCCESS;
+}
+
+/*
+ * ConsoleMoveEuler
+ * Use the input euler angle to draw a new spot on the texture
+ * and/or update the location of the cursor.
+ */
+commandResult ConsoleMoveEuler(clientCommand command, float theta, float phi) {
+  char command[100];
+  sprintf(command, "%c,%4.2f,%4.2f", command, theta, phi);
+  ConsoleSendLine(command);
+  return COMMAND_SUCCESS;
+}
+
+/*
+ * ConsoleResizeCursor
+ * Use the input to resize the cursor drawing on the texture
+ */
+commandResult ConsoleResizeCursor(clientCommand command, uint16_t size) {
+  char command[100];
+  sprintf(command, "r,%u", command, size);
+  ConsoleSendLine(command);
+  return COMMAND_SUCCESS;
+}
+
+/*
+ * ConsoleChangeColor
+ * Use the input to change the color on the texture
+ */
+commandResult ConsoleChangeColor(clientCommand command, clientColor color) {
+  char command[100];
+  sprintf(command, "c,%s", command, color);
+  ConsoleSendLine(command);
   return COMMAND_SUCCESS;
 }

@@ -58,7 +58,7 @@
 
 /* Private define ------------------------------------------------------------*/
 /* USER CODE BEGIN PD */
-#define FRAME_DELAY      20      // Time to wait (in milliseconds) between updating frames
+#define FRAME_DELAY      25      // Time to wait (in milliseconds) between updating frames
 /* USER CODE END PD */
 
 /* Private macro -------------------------------------------------------------*/
@@ -76,13 +76,11 @@ uint32_t lastFrameTick = 0;             // Counter to track when to update frame
 uint32_t lastSecondTick = 0;   // Counter to track when to update time indicator
 uint32_t nextTick = 0;                  // Counter for measuring time
 TS_StateTypeDef TS_State;               // Touchscreen struct
-structAppState appState;                   // State of game
+structAppState appState;                   // Program state in state machine
 uint16_t touchStateTransition = 0;    // Counter for touch state event detection
 void (*checkTouch)(void);               // Function pointer for touch states
 
-//float accel_mg[3];
-//float gyro[3] = { 0 };
-sensors_t boardSensors;
+sensors_t boardSensors; // The struct that holds accelerometer data, gyro data, and Kalman filtered estimates of board's Euler angle
 
 /* USER CODE END PV */
 
@@ -111,6 +109,7 @@ static structAppState handleTouchBegin(void) {
   char string[60];
   sprintf(string, "Touch X coordinate: %d\r\nTouch Y coordinate: %d", x, y);
   ConsoleSendLine(string);
+  // TODO: color picker and size adjust
   return APP_NORMAL;
 }
 
@@ -247,7 +246,6 @@ int main(void) {
 
   // Set the initial values for the Kalman filter to work from
   HAL_Delay(100); // Wait for sensors to stabilize
-  // TODO: Get the obsv readings here
 
   // Enable USB HID operations
 
@@ -260,7 +258,7 @@ int main(void) {
   checkTouch = &clearIdle;
   appState = APP_NORMAL;
 
-  ConsoleSendLine("^0.0,0.0,0.0"); // This will reset the orientation of the cube on the web client end
+  ConsoleSendLine("m,0.0,0.0"); // This will reset the orientation of the cursor on the web client end
 
   /* USER CODE END 2 */
 
@@ -268,68 +266,79 @@ int main(void) {
   /* USER CODE BEGIN WHILE */
   while (1) {
     nextTick = HAL_GetTick();
-    // Every 5 milliseconds, run accel_check_tap
-    if ((nextTick - lastFrameTick) >= 25) {
+    // Every 25 milliseconds, update sensors and instruct the web client to update
+    if ((nextTick - lastFrameTick) >= FRAME_DELAY) {
+      // Update gyro reading, accel reading, and Kalman euler angles
       getReadings(&boardSensors, (nextTick - lastFrameTick));
+
+      // Check if a double-tap event has occurred
       //accel_check_tap();
 
-      char texxxt[100];
-      //sprintf(texxxt, "Pitch: %3.2f; Roll: %3.2f", boardSensors.KalmanAngleX, boardSensors.KalmanAngleY);
-      sprintf(texxxt, "^%4.2f,%4.2f", boardSensors.KalmanStateTheta, boardSensors.KalmanStatePhi);
-      ConsoleSendLine(texxxt);
+      // If button is pressed, update cursor location and drawing; otherwise, just update cursor location
+      if (GPIO_PIN_SET == BSP_PB_GetState(BUTTON_KEY)) {
+        ConsoleDrawCursorEuler(boardSensors.KalmanStateTheta,
+            boardSensors.KalmanStatePhi);
+      } else {
+        ConsoleCursorEuler(boardSensors.KalmanStateTheta,
+            boardSensors.KalmanStatePhi);
+      }
+
+      // If touch screen is pressed, handle it here
+      // (Touch screen used to change cursor color and size)
+      //checkTouch();
+
       lastFrameTick = nextTick;
     }
-
 
     /*
-    // If two seconds have elapsed, update gyro
-    if ((APP_NORMAL == appState) && ((nextTick - lastSecondTick) > 1000)) {
+     // If two seconds have elapsed, update gyro
+     if ((APP_NORMAL == appState) && ((nextTick - lastSecondTick) > 1000)) {
 
 
-//      // Update clock time
-//      BSP_GYRO_GetXYZ(gyro);
-//      // Todo: figure out what XYZ correspond to
-//      accel_getValues();
-//      char gyrotext[200];
-//      sprintf(gyrotext, "Gyro [DPS]:%4.2f\t%4.2f\t%4.2f",
-//      //gyro[0], gyro[1], gyro[2]);
-//          gyro[0] * 0.001, gyro[1] * 0.001, gyro[2] * 0.001);
-//      ConsoleSendLine(gyrotext);
+     //      // Update clock time
+     //      BSP_GYRO_GetXYZ(gyro);
+     //      // Todo: figure out what XYZ correspond to
+     //      accel_getValues();
+     //      char gyrotext[200];
+     //      sprintf(gyrotext, "Gyro [DPS]:%4.2f\t%4.2f\t%4.2f",
+     //      //gyro[0], gyro[1], gyro[2]);
+     //          gyro[0] * 0.001, gyro[1] * 0.001, gyro[2] * 0.001);
+     //      ConsoleSendLine(gyrotext);
 
-      lastSecondTick += 1000;
-    }
-    // Idle so screen is drawn at (at most) 50 FPS
-    if ((nextTick - lastFrameTick) > FRAME_DELAY) {
-      lastFrameTick = nextTick;
+     lastSecondTick += 1000;
+     }
+     // Idle so screen is drawn at (at most) 50 FPS
+     if ((nextTick - lastFrameTick) > FRAME_DELAY) {
+     lastFrameTick = nextTick;
 
-      // If app is in transition state (APP_INIT),
-      // do things needed to move to next state
-      if (APP_INIT == appState) {
-        // TODO: things
-        appState = APP_NORMAL;
-      }
+     // If app is in transition state (APP_INIT),
+     // do things needed to move to next state
+     if (APP_INIT == appState) {
+     // TODO: things
+     appState = APP_NORMAL;
+     }
 
-      // If app is in NORMAL state, check for screen touch
-      // This may cause it to enter a transition state
-      if (APP_NORMAL == appState) {
-        BSP_TS_GetState(&TS_State);
-        checkTouch();
-      }
+     // If app is in NORMAL state, check for screen touch
+     // This may cause it to enter a transition state
+     if (APP_NORMAL == appState) {
+     BSP_TS_GetState(&TS_State);
+     checkTouch();
+     }
 
-      // If app is in NORMAL state, check for console keypresses
-      // This may cause it to enter a transition state
-      if (APP_NORMAL == appState) {
-        appState = ConsoleProcess(appState);
-      }
+     // If app is in NORMAL state, check for console keypresses
+     // This may cause it to enter a transition state
+     if (APP_NORMAL == appState) {
+     appState = ConsoleProcess(appState);
+     }
 
-      // If app is in NORMAL state, check for user button press
-      // Double-click resets cursor origin
-      // Press and hold draws a stroke
-      if (APP_NORMAL == appState) {
-        appState = buttonProcess(appState);
-      }
-    }
-    */
+     // If app is in NORMAL state, check for user button press
+     // Double-click resets cursor origin
+     // Press and hold draws a stroke
+     if (APP_NORMAL == appState) {
+     appState = buttonProcess(appState);
+     }
+     }
+     */
 
     /* USER CODE END WHILE */
 

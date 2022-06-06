@@ -13,21 +13,42 @@ const idle = async (time) => {
   await new Promise((p) => setTimeout(p, time));
 };
 
-const isValidCommand = (stream) => {
-  if (!stream.startsWith("^")) {
-    return false;
+// This is the function that executes a screen update
+const commandProcess = (stream) => {
+  let args = stream.split(","); // Don't forget all arguments are strings at this point!
+  if (args[0] == "m") {
+    // A move-cursor command was received
+    if (args.length != 3) return;
+    let θ = parseFloat(args[1]);
+    let φ = parseFloat(args[2]);
+    if (θ < -90 || θ > 90 || φ < -180 || φ > 180) return;
+    orient(θ, φ);
+  } else if (args[0] == "d") {
+    // A draw-spot command was received
+    if (args.length != 3) return;
+    let θ = parseFloat(args[1]);
+    let φ = parseFloat(args[2]);
+    if (θ < -90 || θ > 90 || φ < -180 || φ > 180) return;
+    symmetricSplotch(θ, φ);
+  } else if (args[0] == "x") {
+    // A move-and-draw command was received
+    if (args.length != 3) return;
+    let θ = parseFloat(args[1]);
+    let φ = parseFloat(args[2]);
+    if (θ < -90 || θ > 90 || φ < -180 || φ > 180) return;
+    orient(θ, φ);
+    symmetricSplotch(θ, φ);
+  } else if (args[0] == "c") {
+    // A change-color command was received
+    if (args.length != 2 || args[1].length != 6) return;
+    // TODO: SET COLOR OF CURSOR AND ART HERE
+  } else if (args[0] == "r") {
+    // A resize-cursor command was received
+    if (args.length != 2) return;
+    let size = parseInt(args[1]);
+    if (!!size || size < 0 || size > 200) return;
+    // TODO: SET CURSOR SIZE HERE
   }
-  let args = stream.substring(1).split(",");
-  if (args.length != 2) {
-    return false;
-  }
-  let θ = parseFloat(args[0]);
-  let φ = parseFloat(args[1]);
-
-  if (θ < -90 || θ > 90 || φ < -180 || φ > 180) {
-    return false;
-  }
-  return true;
 };
 
 async function readUntilClosed() {
@@ -45,17 +66,7 @@ async function readUntilClosed() {
           stream += glyph;
           if (glyph == "\n" || glyph == "\0") {
             //console.log(stream);
-            if (isValidCommand(stream)) {
-              let args = stream.substring(1).split(",");
-              let θ = parseFloat(args[0]);
-              let φ = parseFloat(args[1]);
-              orient(θ, φ);
-              counter++;
-              if (counter >= 4) {
-                symmetricSplotch(θ, φ);
-                counter = 0;
-              }
-            }
+            commandProcess(stream);
             stream = "";
           }
         }
