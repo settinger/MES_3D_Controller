@@ -1,7 +1,11 @@
 /*
- * fusion.h
- * Largely based on the MPU6050 library by Konstantin Bulanov: https://github.com/leech001/MPU6050
- * That library is released under a GNU GPL v3.0 license.
+ * mykalman.h
+ * Partly based on the MPU6050 library by Konstantin Bulanov: https://github.com/leech001/MPU6050
+ * That library is released under a GNU GPL v3 license.
+ * And that library is based on the C++ Kalman Filter library by Kristian Lauszus: https://github.com/TKJElectronics/KalmanFilter
+ * That library is released under a GNU GPL v2 license.
+ *
+ * Also using this application note from NXP: https://www.nxp.com/files-static/sensors/doc/app_note/AN3461.pdf
  *
  *  Created on: Jun 3, 2022
  *      Author: Sam

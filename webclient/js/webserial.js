@@ -7,6 +7,7 @@ const bDisconn = document.getElementById("bDisconn");
 
 const streamReader = new TextDecoder();
 let stream = "";
+let counter = 0;
 
 const idle = async (time) => {
   await new Promise((p) => setTimeout(p, time));
@@ -31,8 +32,15 @@ async function readUntilClosed() {
           if (glyph == "\n" || glyph == "\0") {
             console.log(stream);
             if (stream.startsWith("^")) {
-              stream.substring(1);
-              orient(...stream.substring(1).split(","));
+              let [stringθ, stringφ] = stream.substring(1).split(","); // This is bad, it assumes no communications errors
+              let θ = parseFloat(stringθ);
+              let φ = parseFloat(stringφ);
+              orient(θ, φ);
+              counter++;
+              if (counter >= 4) {
+                drawSplotch(θ, φ);
+                counter = 0;
+              }
             }
             stream = "";
           }

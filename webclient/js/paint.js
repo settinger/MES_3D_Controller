@@ -5,7 +5,7 @@ const Nx = new THREE.Vector3(1, 0, 0);
 const Ny = new THREE.Vector3(0, 1, 0);
 const Nz = new THREE.Vector3(0, 0, 1);
 const N0 = new THREE.Vector3(0, 0, 0);
-const origPosition = new THREE.Vector3(0, 0, 0);
+const origPosition = new THREE.Vector3(0, 2, 0); // Resting location of cursor
 const origRotation = new THREE.Euler(0, 0, 0);
 
 // Define camera and lighting
@@ -16,26 +16,37 @@ const camera = new THREE.PerspectiveCamera(
   1000
 );
 camera.position.set(2, 2, 5);
+//camera.position.set(5, 1, 1);
 camera.lookAt(N0);
 const light = new THREE.DirectionalLight(0xffffff, 1);
 light.position.set(4, 2, 5);
 scene.add(light);
 
 // Load textures, either bitmap or SVG
+//const textureMap = new THREE.MeshLambertMaterial();
 const texCallback = (texture) => {
   const material = new THREE.MeshLambertMaterial({ map: texture });
   surface.material = material;
+  //textureMap.map = texture;
+  //surface.material.map = texture;
 };
 
 // Either load a bitmap texture OR an SVG texture
 const loader = new THREE.TextureLoader();
-if (false) {
-  const texture = loader.load(canvas.toDataURL("image/jpg"), texCallback);
-} else {
-  const svgData = new XMLSerializer().serializeToString(mySVG);
-  const svgURI = `data:image/svg+xml,${svgData}`;
-  const texture = loader.load(svgURI, texCallback);
-}
+const updateTexture = () => {
+  if (false) {
+    const texture = loader.load(canvas.toDataURL("image/jpg"), texCallback);
+  } else {
+    const svgData = new XMLSerializer().serializeToString(mySVG);
+    const svgURI = `data:image/svg+xml,${svgData}`;
+    const texture = loader.load(svgURI, texCallback);
+  }
+};
+
+// Frame refresh
+const refresh = () => {
+  renderer.render(scene, camera);
+};
 
 // Define renderer and where it lives on the webpage
 const renderer = new THREE.WebGLRenderer();
@@ -46,25 +57,28 @@ document.body.appendChild(renderer.domElement);
 const geometry = new THREE.BoxGeometry(0.4, 0.4, 0.4);
 const cursorGeo = new THREE.SphereGeometry(0.2); // The cursor that indicates where paint will appear
 const surfaceGeo = new THREE.SphereGeometry(2); // The surface on which the paint will appear
-const material = new THREE.MeshLambertMaterial({
+const cursorMaterial = new THREE.MeshLambertMaterial({
   color: 0x00ff00,
 });
-const material2 = new THREE.MeshLambertMaterial({
+const surfaceMaterial = new THREE.MeshLambertMaterial({
   color: 0xffffff,
   opacity: 0.5,
   transparent: true,
 });
 
 // Create objects
-const cursor = new THREE.Mesh(cursorGeo, material); // The cursor that indicates where paint will appear
-const surface = new THREE.Mesh(surfaceGeo, material2); // The surface on which the paint will appear
+const cursor = new THREE.Mesh(cursorGeo, cursorMaterial); // The cursor that indicates where paint will appear
+const surface = new THREE.Mesh(surfaceGeo, surfaceMaterial); // The surface on which the paint will appear
 const axesN = new THREE.AxesHelper(5); // Axes to help orient us in the inertial reference frame
 const axesB = new THREE.AxesHelper(1); // Axes to show the cursor's reference frame
 scene.add(surface);
-surface.add(axesN);
-//scene.add(cursor);
-//cursor.add(axesB);
-//cursor.position.x = 2;
+scene.add(axesN);
+scene.add(cursor);
+cursor.add(axesB);
+cursor.position.set(...origPosition);
+// These rotations align the texture map so (0, 0) on the texture is mapped to the smallest φ and smallest θ:
+surface.rotateOnAxis(Nz, -Math.PI / 2);
+surface.rotateOnAxis(Ny, -Math.PI);
 
 // I can't believe "rotateOnWorldAxis" just doesn't work and people accept that
 // Anyway here are my kludges, one to apply a rotation and one to set theta/phi
@@ -92,6 +106,17 @@ const setAngleInertial = (object, theta, phi, point = N0) => {
   object.position.add(point);
 };
 
+// Perform this when serial monitor receives new position data
+const orient = (θ, φ) => {
+  setAngleInertial(cursor, (θ * Math.PI) / 180, (φ * Math.PI) / 180);
+  renderer.render(scene, camera);
+};
+
+renderer.render(scene, camera);
+updateTexture();
+setTimeout(refresh, 10);
+
+/* 
 // Here is where the idle animation occurs
 let theta = 0;
 let phi = 0;
@@ -102,4 +127,5 @@ function animate() {
   setAngleInertial(surface, theta, phi);
   renderer.render(scene, camera);
 }
-animate();
+//animate();
+ */

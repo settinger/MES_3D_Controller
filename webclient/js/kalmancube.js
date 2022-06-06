@@ -52,11 +52,11 @@ const setAngleInertial = (object, theta, phi, point = N0) => {
   object.position.set(...origPosition);
   object.rotation.set(...origRotation);
 
-  // Set cube rotation to new values
+  // Set object rotation to new values
   const eul = new THREE.Euler(phi, 0, theta, "XYZ");
   object.setRotationFromEuler(eul);
 
-  // Set cube position to new values
+  // Set object position to new values
   object.position.sub(point);
   object.position.applyEuler(eul);
   object.position.add(point);
