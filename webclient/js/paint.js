@@ -5,7 +5,7 @@ const Nx = new THREE.Vector3(1, 0, 0);
 const Ny = new THREE.Vector3(0, 1, 0);
 const Nz = new THREE.Vector3(0, 0, 1);
 const N0 = new THREE.Vector3(0, 0, 0);
-const origPosition = new THREE.Vector3(0, 2, 0); // Resting location of cursor
+const origPosition = new THREE.Vector3(0, 1, 0); // Resting location of cursor
 const origRotation = new THREE.Euler(0, 0, 0);
 
 // Define camera and lighting
@@ -15,23 +15,19 @@ const camera = new THREE.PerspectiveCamera(
   0.1,
   1000
 );
-camera.position.set(2, 2, 5);
+camera.position.set(1, 1.2, 2.5);
 //camera.position.set(5, 1, 1);
 camera.lookAt(N0);
 const light = new THREE.DirectionalLight(0xffffff, 1);
-light.position.set(4, 2, 5);
+light.position.set(2, 1, 2.5);
 scene.add(light);
 
-// Load textures, either bitmap or SVG
-//const textureMap = new THREE.MeshLambertMaterial();
+// Either load a bitmap texture OR an SVG texture
 const texCallback = (texture) => {
   const material = new THREE.MeshLambertMaterial({ map: texture });
   surface.material = material;
-  //textureMap.map = texture;
-  //surface.material.map = texture;
 };
 
-// Either load a bitmap texture OR an SVG texture
 const loader = new THREE.TextureLoader();
 const updateTexture = () => {
   if (false) {
@@ -55,8 +51,8 @@ document.body.appendChild(renderer.domElement);
 
 // Define the geometries and materials
 const geometry = new THREE.BoxGeometry(0.4, 0.4, 0.4);
-const cursorGeo = new THREE.SphereGeometry(0.2); // The cursor that indicates where paint will appear
-const surfaceGeo = new THREE.SphereGeometry(2); // The surface on which the paint will appear
+const cursorGeo = new THREE.SphereGeometry(0.1); // The cursor that indicates where paint will appear
+const surfaceGeo = new THREE.SphereGeometry(1); // The surface on which the paint will appear
 const cursorMaterial = new THREE.MeshLambertMaterial({
   color: 0x00ff00,
 });
@@ -115,17 +111,3 @@ const orient = (θ, φ) => {
 renderer.render(scene, camera);
 updateTexture();
 setTimeout(refresh, 10);
-
-/* 
-// Here is where the idle animation occurs
-let theta = 0;
-let phi = 0;
-
-function animate() {
-  requestAnimationFrame(animate);
-  phi += 0.009;
-  setAngleInertial(surface, theta, phi);
-  renderer.render(scene, camera);
-}
-//animate();
- */
