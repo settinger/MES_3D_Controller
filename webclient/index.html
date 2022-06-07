@@ -7,11 +7,30 @@
       body {
         margin: 0;
       }
+
+      #bConn,
+      #bDisconn {
+        left: 1rem;
+      }
+      #rCam {
+        right: 1rem;
+      }
+      #lCam {
+        right: 12rem;
+      }
+      button {
+        position: absolute;
+        font-size: 150%;
+        top: 1rem;
+        width: 10rem;
+      }
     </style>
   </head>
   <body>
     <button id="bConn">Connect</button>
-    <button id="bDisconn">Disconnect</button>
+    <button id="bDisconn" style="display: none">Disconnect</button>
+    <button id="lCam">🢀 Camera</button>
+    <button id="rCam">Camera 🢂</button>
     <script src="js/domtools.js"></script>
     <script src="js/three.js"></script>
     <script src="js/svgpainttools.js"></script>

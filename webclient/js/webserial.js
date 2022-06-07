@@ -90,10 +90,15 @@ bConn.addEventListener("click", async () => {
   port = await navigator.serial.requestPort();
   await port.open({ baudRate: 115200 });
   closedPromise = readUntilClosed();
+  bDisconn.style.display = "block";
+  bConn.style.display = "none";
 });
 
 bDisconn.addEventListener("click", async () => {
   keepReading = false;
   reader.cancel();
   await closedPromise;
+  bDisconn.style.display = "none";
+  bConn.style.display = "block";
+  bConn.disabled = true;
 });

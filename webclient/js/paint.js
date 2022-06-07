@@ -19,14 +19,73 @@ const camera = new THREE.PerspectiveCamera(
   0.1,
   1000
 );
-camera.position.set(1, 1.2, 2.5);
+const origCameraSpot = new THREE.Vector3(1, 1.2, 2.5);
+camera.position.set(...origCameraSpot);
 //camera.position.set(5, 1, 1);
 camera.lookAt(N0);
+
 const light = new THREE.DirectionalLight(0xffffff, 1);
 light.position.set(2, 1, 2.5);
 scene.add(light);
+const light2 = new THREE.DirectionalLight(0xffffff, 1);
+light2.position.set(-2, 1, -2.5);
+scene.add(light2);
+
+const turnCam = (x) => {
+  const rot = new THREE.Matrix3().set(
+    Math.cos(x),
+    0,
+    Math.sin(x),
+    0,
+    1,
+    0,
+    -Math.sin(x),
+    0,
+    Math.cos(x)
+  );
+  camera.position.applyMatrix3(rot);
+  camera.lookAt(N0);
+
+  refresh();
+};
+
+// Add camera-rotate button controls
+const lCam = document.getElementById("lCam");
+const rCam = document.getElementById("rCam");
+let lTimer, rTimer;
+lCam.addEventListener("mousedown", () => {
+  turnCam(-0.1);
+});
+lCam.addEventListener("mousedown", async () => {
+  clearInterval(lTimer);
+  lTimer = setInterval(() => {
+    turnCam(-0.1); // TODO: rotate camera -y
+  }, 200);
+});
+lCam.addEventListener("mouseup", () => {
+  clearInterval(lTimer);
+});
+lCam.addEventListener("mouseleave", () => {
+  clearInterval(lTimer);
+});
+rCam.addEventListener("mousedown", () => {
+  turnCam(0.1);
+});
+rCam.addEventListener("mousedown", async () => {
+  clearInterval(rTimer);
+  rTimer = setInterval(() => {
+    turnCam(0.1); // TODO: rotate camera -y
+  }, 200);
+});
+rCam.addEventListener("mouseup", () => {
+  clearInterval(rTimer);
+});
+rCam.addEventListener("mouseleave", () => {
+  clearInterval(rTimer);
+});
 
 // Either load a bitmap texture OR an SVG texture
+// I only implemented SVG thus far
 const texCallback = (texture) => {
   const material = new THREE.MeshLambertMaterial({ map: texture });
   surface.material = material;
@@ -51,7 +110,8 @@ const refresh = () => {
 // Define renderer and where it lives on the webpage
 const renderer = new THREE.WebGLRenderer();
 renderer.setSize(window.innerWidth, window.innerHeight); // TODO: add an onResize listener
-document.body.appendChild(renderer.domElement);
+//document.body.appendChild(renderer.domElement);
+document.body.insertBefore(renderer.domElement, document.body.firstChild);
 
 // Define the geometries and materials
 const cursorGeo = new THREE.SphereGeometry(cursorSize / 300); // The cursor that indicates where paint will appear

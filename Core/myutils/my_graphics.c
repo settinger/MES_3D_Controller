@@ -38,7 +38,7 @@ void drawMainScreen(clientColor color, uint16_t size) {
   BSP_LCD_SetTextColor(0xFF000000 | color);
   BSP_LCD_FillRect(40, 20, 160, 120);
   BSP_LCD_SetTextColor(LCD_COLOR_DARKGRAY);
-  BSP_LCD_FillCircle(120, 240, size);
+  BSP_LCD_FillCircle(120, 240, 50);
 
   BSP_LCD_SetTextColor(LCD_COLOR_BLACK);
 //  BSP_LCD_DisplayStringAt(0, 72, "Ink color", CENTER_MODE);
