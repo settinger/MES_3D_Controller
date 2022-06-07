@@ -55,7 +55,12 @@ const drawSplotch = (θ, φ, update = true) => {
   let cx = φ2u(φ);
   let cy = θ2v(θ);
 
-  mySVG.appendSVG("circle", { cx, cy, r: 20, fill: "%23007BB855" }); // TODO: make color and size respond to cursor state
+  mySVG.appendSVG("circle", {
+    cx,
+    cy,
+    r: cursorSize,
+    fill: `%23${cursorColor}55`,
+  });
 
   if (update) {
     updateTexture();

@@ -28,17 +28,16 @@ void prepareDisplay(void) {
   BSP_LCD_SetBackColor(LCD_COLOR_LIGHTGRAY);
   BSP_LCD_SetFont(&Font16);
 
-  //drawColorPicker();
-  drawMainScreen(COLOR_DEFAULT, 20);
+  drawMainScreen();
 }
 
-void drawMainScreen(clientColor color, uint16_t size) {
+void drawMainScreen(void) {
   // Draw an "Ink color" button and a "Cursor size" button
   clearScreen();
-  BSP_LCD_SetTextColor(0xFF000000 | color);
+  BSP_LCD_SetTextColor(0xFF000000 | currentColor);
   BSP_LCD_FillRect(40, 20, 160, 120);
   BSP_LCD_SetTextColor(LCD_COLOR_DARKGRAY);
-  BSP_LCD_FillCircle(120, 240, 50);
+  BSP_LCD_FillCircle(120, 240, currentSize);
 
   BSP_LCD_SetTextColor(LCD_COLOR_BLACK);
 //  BSP_LCD_DisplayStringAt(0, 72, "Ink color", CENTER_MODE);
@@ -67,5 +66,16 @@ void drawColorPicker(void) {
 }
 
 void drawSizePicker(void) {
+  // Show the cursor sizes available: min 0, max 64
+  clearScreen();
 
+  // Have to draw the fillTriangle three times to get all the stray pixels:
+  BSP_LCD_SetTextColor(LCD_COLOR_DARKGRAY);
+  BSP_LCD_FillTriangle(120, 240, 0, 0, 320, 320);
+  BSP_LCD_FillTriangle(120, 0, 240, 0, 320, 320);
+  BSP_LCD_FillTriangle(0, 240, 120, 320, 320, 0);
+
+  // Draw a band that indicates the current cursor size, y = 5*currentSize
+  BSP_LCD_SetTextColor(0xFF000000 | currentColor);
+  BSP_LCD_FillRect(0, currentSize*5-5, 240, 10);
 }

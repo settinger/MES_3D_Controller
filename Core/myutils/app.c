@@ -24,7 +24,7 @@ structAppState mainScreenTouchHandler(int16_t x, int16_t y) {
     if ((20 < y) && (y < 140)) {
       drawColorPicker();
       state = APP_COLORPICKER;
-    } else if ((180 < y) && (y < 200)) {
+    } else if ((180 < y) && (y < 300)) {
       drawSizePicker();
       state = APP_SIZEPICKER;
     }
@@ -47,10 +47,15 @@ structAppState colorPickerTouchHandler(int16_t x, int16_t y) {
     currentColor = COLOR_DEFAULT;
   }
   ConsoleChangeColor(currentColor);
-  drawMainScreen(currentColor, currentSize);
+  drawMainScreen();
   return APP_NORMAL;
 }
 
 structAppState sizePickerTouchHandler(int16_t x, int16_t y) {
-  // Six dots on screen: 5, 10, 20, 30, 40, 50
+  // X coordinate doesn't actually matter
+  // Y coordinate divided by 5 produces the new cursor size
+  currentSize = (uint16_t)(y/5);
+  ConsoleResizeCursor(currentSize);
+  drawMainScreen();
+  return APP_NORMAL;
 }

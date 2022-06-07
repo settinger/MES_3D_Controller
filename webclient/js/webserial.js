@@ -23,6 +23,7 @@ const commandProcess = (stream) => {
     let φ = parseFloat(args[2]);
     if (θ < -90 || θ > 90 || φ < -180 || φ > 180) return;
     orient(θ, φ);
+    counter = 0;
   } else if (args[0] == "d") {
     // A draw-spot command was received
     if (args.length != 3) return;
@@ -30,6 +31,7 @@ const commandProcess = (stream) => {
     let φ = parseFloat(args[2]);
     if (θ < -90 || θ > 90 || φ < -180 || φ > 180) return;
     symmetricSplotch(θ, φ);
+    counter = 0;
   } else if (args[0] == "x") {
     // A move-and-draw command was received
     if (args.length != 3) return;
@@ -48,9 +50,10 @@ const commandProcess = (stream) => {
     // A resize-cursor command was received
     if (args.length != 2) return;
     let size = parseInt(args[1]);
-    if (!!size || size < 0 || size > 120) return;
+    if (!size || size < 0 || size > 120) return;
     // TODO: SET CURSOR SIZE HERE
     // Unfortunately the only way I know to change the cursor radius is with scale()
+    console.log(`scaling by ${size}/${cursorSize} = ${size / cursorSize}`);
     cursorGeo.scale(size / cursorSize, size / cursorSize, size / cursorSize);
     cursorSize = size;
   }

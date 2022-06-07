@@ -267,7 +267,9 @@ int main(void) {
   checkTouch = &clearIdle;
   appState = APP_NORMAL;
 
-  ConsoleSendLine("m,0.0,0.0"); // This will reset the orientation of the cursor on the web client end
+  ConsoleMoveEuler(MOVE_CURSOR, 0.0, 0.0); // This will reset the orientation of the cursor on the web client
+  ConsoleChangeColor(currentColor);        // This ensures the web client color matches the initial board color
+  ConsoleResizeCursor(currentSize);        // This ensures the web client cursor size matches the board's
 
   /* USER CODE END 2 */
 
