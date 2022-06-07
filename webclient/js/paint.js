@@ -8,6 +8,10 @@ const N0 = new THREE.Vector3(0, 0, 0);
 const origPosition = new THREE.Vector3(0, 1, 0); // Resting location of cursor
 const origRotation = new THREE.Euler(0, 0, 0);
 
+// Globals for cursor color and size
+let cursorColor = "007BB8"; // ASCII code for a nice azulejo blue
+let cursorSize = 20; // Starting radius of cursor (in U-V map pixel units)
+
 // Define camera and lighting
 const camera = new THREE.PerspectiveCamera(
   75,
@@ -50,11 +54,10 @@ renderer.setSize(window.innerWidth, window.innerHeight); // TODO: add an onResiz
 document.body.appendChild(renderer.domElement);
 
 // Define the geometries and materials
-const geometry = new THREE.BoxGeometry(0.4, 0.4, 0.4);
-const cursorGeo = new THREE.SphereGeometry(0.1); // The cursor that indicates where paint will appear
+const cursorGeo = new THREE.SphereGeometry(cursorSize / 300); // The cursor that indicates where paint will appear
 const surfaceGeo = new THREE.SphereGeometry(1); // The surface on which the paint will appear
 const cursorMaterial = new THREE.MeshLambertMaterial({
-  color: 0x00ff00,
+  color: parseInt(`0x${cursorColor}`),
 });
 const surfaceMaterial = new THREE.MeshLambertMaterial({
   color: 0xffffff,
@@ -66,7 +69,7 @@ const surfaceMaterial = new THREE.MeshLambertMaterial({
 const cursor = new THREE.Mesh(cursorGeo, cursorMaterial); // The cursor that indicates where paint will appear
 const surface = new THREE.Mesh(surfaceGeo, surfaceMaterial); // The surface on which the paint will appear
 const axesN = new THREE.AxesHelper(5); // Axes to help orient us in the inertial reference frame
-const axesB = new THREE.AxesHelper(1); // Axes to show the cursor's reference frame
+const axesB = new THREE.AxesHelper(0.5); // Axes to show the cursor's reference frame
 scene.add(surface);
 scene.add(axesN);
 scene.add(cursor);

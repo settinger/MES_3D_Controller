@@ -12,6 +12,7 @@
 #include <stdbool.h>
 
 #include "app.h"
+#include "color.h"
 
 #define CONSOLE_PROMPT ("> ")
 #define PARAMETER_SEPARATOR (' ')
@@ -42,19 +43,6 @@ typedef enum {
   COLOR_CHANGE  = 'c',
   RESIZE_CURSOR = 'r'
 } clientCommand;
-
-// Enum of colors used in the drawing process
-typedef enum {
-  COLOR_DEFAULT    = 0x007BB8,  // Robins-egg blue
-  COLOR_LIGHT_BLUE = 0x007BB8,  // Robins-egg blue
-  COLOR_DARK_BLUE  = 0x0F10E2,  //
-  COLOR_PINK       = 0xFF91CF,  //
-  COLOR_RED        = 0x8A1212,  // Deep red
-  COLOR_GREEN      = 0x1C8A12,  //
-  COLOR_GOLD       = 0xD9D62E,  //
-  COLOR_VIOLET     = 0x782ED9,  //
-  COLOR_ORANGE     = 0xED750C   //
-} clientColor;
 
 // Commands for receiving/sending strings
 // Must be null terminated!

@@ -48,6 +48,7 @@
 #include "touchscreen.h"
 #include "accel.h"
 #include "mykalman.h"
+#include "color.h"
 
 /* USER CODE END Includes */
 
@@ -79,6 +80,8 @@ TS_StateTypeDef TS_State;               // Touchscreen struct
 structAppState appState;                   // Program state in state machine
 uint16_t touchStateTransition = 0;    // Counter for touch state event detection
 void (*checkTouch)(void);               // Function pointer for touch states
+clientColor currentColor = COLOR_DEFAULT; // The color of the cursor
+uint16_t currentSize = 20; // The current radius (in UV Map pixels) of the cursor
 
 sensors_t boardSensors; // The struct that holds accelerometer data, gyro data, and Kalman filtered estimates of board's Euler angle
 
@@ -291,6 +294,7 @@ int main(void) {
 
       // If touch screen is pressed, handle it here
       // (Touch screen used to change cursor color and size)
+      BSP_TS_GetState(&TS_State);
       checkTouch();
 
       lastFrameTick = nextTick;

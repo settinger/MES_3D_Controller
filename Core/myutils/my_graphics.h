@@ -10,6 +10,7 @@
 
 #include "stdio.h"
 #include <stdbool.h>
+#include "color.h"
 
 #define LCD_FRAME_BUFFER_LAYER0 (LCD_FRAME_BUFFER + 0x130000)
 #define LCD_FRAME_BUFFER_LAYER1 LCD_FRAME_BUFFER
@@ -22,7 +23,7 @@
 void prepareDisplay(void);
 void clearScreen(void);
 
-void drawMainScreen(void);
+void drawMainScreen(clientColor color, uint16_t size);
 void drawColorPicker(void);
 void drawSizePicker(void);
 

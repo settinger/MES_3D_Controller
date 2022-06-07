@@ -15,6 +15,7 @@
 
 #include "app.h"
 #include "console_io.h"
+#include "color.h"
 
 #ifndef MIN
 #define MIN(X, Y) (((X) < (Y)) ? (X) : (Y))
@@ -193,7 +194,7 @@ commandResult ConsoleResizeCursor(uint16_t size) {
  */
 commandResult ConsoleChangeColor(clientColor color) {
   char toSend[100];
-  sprintf(toSend, "c,0x%X6", color);
+  sprintf(toSend, "c,%06X", color);
   ConsoleSendLine(toSend);
   return COMMAND_SUCCESS;
 }

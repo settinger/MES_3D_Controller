@@ -1,4 +1,15 @@
-// Tools for creating and updating U-V map for the three.js object when the U-V map is a bitmap (canvas)
+/*
+Tools for creating and updating U-V map for the three.js object when the U-V map is a bitmap (canvas)
+
+  _____ _   _                     _        __ _       _     _              _ _ 
+ |_   _| | ( )                   | |      / _(_)     (_)   | |            | | |
+   | | | |_|/ ___     _ __   ___ | |_    | |_ _ _ __  _ ___| |__   ___  __| | |
+   | | | __| / __|   | '_ \ / _ \| __|   |  _| | '_ \| / __| '_ \ / _ \/ _` | |
+  _| |_| |_  \__ \   | | | | (_) | |_    | | | | | | | \__ \ | | |  __/ (_| |_|
+ |_____|\__| |___/   |_| |_|\___/ \__|   |_| |_|_| |_|_|___/_| |_|\___|\__,_(_)
+                                                                               
+                                                   
+*/
 
 let size = 2048;
 canvas = document.createElement("canvas");

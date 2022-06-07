@@ -7,6 +7,11 @@
 
 #include "app.h"
 #include "my_graphics.h"
+#include "color.h"
+#include "console.h"
+
+extern clientColor currentColor;
+extern uint16_t currentSize;
 
 void appInit(void) {
   prepareDisplay();
@@ -28,7 +33,23 @@ structAppState mainScreenTouchHandler(int16_t x, int16_t y) {
 }
 
 structAppState colorPickerTouchHandler(int16_t x, int16_t y) {
-
+  // There are eight sections of the screen
+  // When touched, update color data on STM32, update color data on web client, update color data in EEPROM
+  structAppState state = APP_COLORPICKER;
+  if (y < 80) {
+    currentColor = (x < 120) ? COLOR_VIOLET : COLOR_LIGHT_BLUE;
+  } else if (y < 160) {
+    currentColor = (x < 120) ? COLOR_DARK_BLUE : COLOR_GREEN;
+  } else if (y < 240) {
+    currentColor = (x < 120) ? COLOR_GOLD : COLOR_ORANGE;
+  } else if (y < 320) {
+    currentColor = (x < 120) ? COLOR_RED : COLOR_PINK;
+  } else {
+    currentColor = COLOR_DEFAULT;
+  }
+  ConsoleChangeColor(currentColor);
+  drawMainScreen(currentColor, currentSize);
+  state = APP_NORMAL;
 }
 
 structAppState sizePickerTouchHandler(int16_t x, int16_t y) {

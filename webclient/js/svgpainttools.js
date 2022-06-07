@@ -55,7 +55,7 @@ const drawSplotch = (θ, φ, update = true) => {
   let cx = φ2u(φ);
   let cy = θ2v(θ);
 
-  mySVG.appendSVG("circle", { cx, cy, r: 20, fill: "%23007BB855" });
+  mySVG.appendSVG("circle", { cx, cy, r: 20, fill: "%23007BB855" }); // TODO: make color and size respond to cursor state
 
   if (update) {
     updateTexture();
@@ -90,7 +90,12 @@ const xyzSplotch = (x, y, z) => {
   let φ = Math.acos(y / Math.sqrt(1 - x * x)) * r2d * Math.sign(z);
   let cx = φ2u(φ);
   let cy = θ2v(θ);
-  mySVG.appendSVG("circle", { cx, cy, r: 20, fill: "%23007BB855" });
+  mySVG.appendSVG("circle", {
+    cx,
+    cy,
+    r: cursorSize,
+    fill: `%23${cursorColor}55`,
+  }); // TODO: make color and size respond to cursor state
 };
 
 // For now: a hack to decimate the number of times this runs

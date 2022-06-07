@@ -40,14 +40,19 @@ const commandProcess = (stream) => {
     orient(θ, φ);
   } else if (args[0] == "c") {
     // A change-color command was received
-    if (args.length != 2 || args[1].length != 6) return;
+    if (args.length != 2) return;
     // TODO: SET COLOR OF CURSOR AND ART HERE
+    cursorColor = args[1].trim();
+    cursor.material.color.setHex(`0x${cursorColor}`);
   } else if (args[0] == "r") {
     // A resize-cursor command was received
     if (args.length != 2) return;
     let size = parseInt(args[1]);
-    if (!!size || size < 0 || size > 200) return;
+    if (!!size || size < 0 || size > 120) return;
     // TODO: SET CURSOR SIZE HERE
+    // Unfortunately the only way I know to change the cursor radius is with scale()
+    cursorGeo.scale(size / cursorSize, size / cursorSize, size / cursorSize);
+    cursorSize = size;
   }
 };
 
