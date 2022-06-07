@@ -256,6 +256,9 @@ int main(void) {
     ConsoleSendLine("Gyro initialized.");
   } else {
     ConsoleSendLine("ERROR! Unable to initialize gyro.");
+    __disable_irq();
+    while (1) {
+    }
   }
 
   // Enable accelerometer

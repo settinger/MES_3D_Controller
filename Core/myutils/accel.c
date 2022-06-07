@@ -32,15 +32,16 @@ void accel_init(void) {
   lis2dh_device_id_get(&dev_ctx, &whoamI);
   if (LIS2DH_ID != whoamI) {
     ConsoleSendLine("Error! Accelerometer not recognized.");
+    __disable_irq();
     while (1) {
-    }  // TODO: ERROR HANDLER
+    }
   } else {
     ConsoleSendLine("Accerometer online.");
   }
 
   // Enable block data update
   lis2dh_block_data_update_set(&dev_ctx, PROPERTY_ENABLE);
-  // Set output data rate to 1Hz (this gets overwritten as soon as tap_config is run)
+  // Set output data rate (this gets overwritten as soon as tap_config is run)
   //lis2dh_data_rate_set(&dev_ctx, LIS2DH_ODR_1Hz);
   lis2dh_data_rate_set(&dev_ctx, LIS2DH_ODR_400Hz);
   // Set scale to +/- 2g
@@ -110,7 +111,7 @@ void accel_read(float *accelStruct) {
 }
 
 /*
- * Tap feature not used
+ * Tap feature not used in this project
  */
 void accel_tap_init(void) {
   // Based on SparkFun's implementation: https://github.com/sparkfun/SparkFun_LIS2DH12_Arduino_Library/tree/master/examples/Example4_TapDetection

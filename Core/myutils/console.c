@@ -10,7 +10,7 @@
 #include "console.h"
 
 #include <string.h>  // for NULL
-#include <stdlib.h>  // for atoi and itoa (though this code implement a version of that)
+#include <stdlib.h>
 #include <stdbool.h>
 
 #include "app.h"
@@ -70,9 +70,8 @@ static uint32_t ConsoleResetBuffer(char receiveBuffer[],
 void ConsoleInit(void) {
   uint32_t i;
   ConsoleIoInit();
-  ConsoleIoSend("\r\n######################\r\n\nDevice has turned on.\r\n");
-  ConsoleIoSend("Keyboard interface online.");
-  ConsoleIoSend(ENDLINE);
+  ConsoleSendLine("\r\n######################\r\n\nDevice has turned on.");
+  ConsoleSendLine("Serial interface online.");
   receivedSoFar = 0u;
 
   for (i = 0u; i < CONSOLE_COMMAND_MAX_LENGTH; i++) {
@@ -82,6 +81,7 @@ void ConsoleInit(void) {
 
 /*
  * ConsoleProcess
+ * This is not used in this project, as the console is transmit-only
  * Look for new inputs that have arrived; if valid command, run right away.
  * No checking for endlines for this particular application.
  * Call this from a loop to handle commands as they become available.
@@ -103,8 +103,7 @@ structAppState ConsoleProcess(structAppState currentStatus) {
     receivedSoFar = ConsoleResetBuffer(receiveBuffer, receivedSoFar, 1);
     receiveBufferNeedsChecking = (receivedSoFar > 0); // (receivedSoFar > 0 ? true : false);
   }
-
-  return APP_NORMAL; // TODO: replace
+  return APP_NORMAL;
 }
 
 /* ConsoleSendString

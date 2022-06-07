@@ -59,7 +59,7 @@ lCam.addEventListener("mousedown", () => {
 lCam.addEventListener("mousedown", async () => {
   clearInterval(lTimer);
   lTimer = setInterval(() => {
-    turnCam(-0.1); // TODO: rotate camera -y
+    turnCam(-0.1);
   }, 200);
 });
 lCam.addEventListener("mouseup", () => {
@@ -74,7 +74,7 @@ rCam.addEventListener("mousedown", () => {
 rCam.addEventListener("mousedown", async () => {
   clearInterval(rTimer);
   rTimer = setInterval(() => {
-    turnCam(0.1); // TODO: rotate camera -y
+    turnCam(0.1);
   }, 200);
 });
 rCam.addEventListener("mouseup", () => {
