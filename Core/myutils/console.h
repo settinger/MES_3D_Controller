@@ -19,10 +19,6 @@
 #define ENDLINE "\r\n"
 #define CONSOLE_COMMAND_MAX_LENGTH 256        // longest possible line
 
-// The C library itoa is sometimes a complicated function and the library costs aren't worth it
-// so this is implements the parts of the function needed for console.
-#define CONSOLE_USE_BUILTIN_ITOA  1
-
 // Console init and operate functions called from main.c
 void ConsoleInit(void);
 structAppState ConsoleProcess(structAppState currentStatus);

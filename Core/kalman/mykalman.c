@@ -150,22 +150,3 @@ float kalmanUpdate(Kalman_t *Kalman, float newAngle, float newRate, float dt) {
 
   return Kalman->angle;
 }
-
-/*
- * Closest Wrap - a hacky way to do away with discontinuties due to trig functions being limited to [-pi, pi]
- * If the angle is in [0, 360], the closest wrap-around angle is 180 degrees; if the angle is [360, 720],
- * closest is 540, and so on. Same with negative values: [-360, 0] yields -180; [-720, -360] yields -540.
- */
-
-float closestWrap(float angle) {
-  int steps = 0;
-  while (angle < 0) {
-    steps--;
-    angle += 360;
-  }
-  while (angle > 360) {
-    steps++;
-    angle -= 360;
-  }
-  return (float) (180 + steps * 360);
-}

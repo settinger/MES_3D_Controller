@@ -31,10 +31,17 @@
     <button id="bDisconn" style="display: none">Disconnect</button>
     <button id="lCam">🢀 Camera</button>
     <button id="rCam">Camera 🢂</button>
+    <!-- domtools.js is a set of shortcut functions I wrote and use to make DOM manipulation (especially SVG manipulation) less repetitive -->
     <script src="js/domtools.js"></script>
+    <!-- three.js is a popular library for creating 3d graphics in Javascript. I found its documentation to be lacking and frequently contradictory, so it's a perfect match for an embedded systems program! -->
     <script src="js/three.js"></script>
-    <script src="js/svgpainttools.js"></script>
+    <!-- svgpainttools.js are the tools used to create an SVG to be used as a texture on the object surface. -->
+    <!-- <script src="js/svgpainttools.js"></script> -->
+    <!-- bitmappainttools.js are the tools used to create a bitmap to be used as a texture on the object surface. -->
+    <script src="js/bitmappainttools.js"></script>
+    <!-- Once the paint helper functions are set up, paint.js applies them to the cursor and surface. -->
     <script src="js/paint.js"></script>
+    <!-- webserial.js handles the web-serial API and parses commands received from the STM32. -->
     <script src="js/webserial.js"></script>
   </body>
 </html>

@@ -95,13 +95,9 @@ structAppState ConsoleProcess(structAppState currentStatus) {
   if ((received > 0) || receiveBufferNeedsChecking) {
     receivedSoFar += received;
     // Any input needs to be processed, not just inputs after endline
-//    // Check if received inputs are valid instructions
-//    if (GAME_LEVEL_SELECT == currentStatus) {
-//      process = levelSelectProcessInput(receiveBuffer[0]);
-//    } else {
-//      process = gameProcessInput(receiveBuffer[0]);
-//    }
-// TODO: replace above with project-relevant process
+    //
+    // (This console only transmits, it does not receive)
+    //
     // Reset buffer by moving any leftovers and nulling the rest.
     // This clears up to and including the front endline character.
     receivedSoFar = ConsoleResetBuffer(receiveBuffer, receivedSoFar, 1);

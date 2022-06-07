@@ -15,11 +15,8 @@
 #include "console.h"
 
 static int16_t data_raw_acceleration[3];
-static int16_t data_raw_temperature;
 static float acceleration_mg[3];
-static float temperature_degC;
 static uint8_t whoamI;
-static uint8_t tx_buffer[1000];
 
 stmdev_ctx_t dev_ctx;
 
@@ -84,10 +81,6 @@ void accel_getValues(void) {
     memset(data_raw_acceleration, 0x00, 3 * sizeof(int16_t));
     lis2dh_acceleration_raw_get(&dev_ctx, data_raw_acceleration);
 
-//    acceleration_mg[0] = lis2dh_from_fs2_nm_to_mg(data_raw_acceleration[0]);
-//    acceleration_mg[1] = lis2dh_from_fs2_nm_to_mg(data_raw_acceleration[1]);
-//    acceleration_mg[2] = lis2dh_from_fs2_nm_to_mg(data_raw_acceleration[2]);
-//    sprintf((char*) tx_buffer, "Acceleration [mg]:%4.2f\t%4.2f\t%4.2f",
     acceleration_mg[0] = lis2dh_from_fs2_nm_to_mg(data_raw_acceleration[0]);
     acceleration_mg[1] = lis2dh_from_fs2_nm_to_mg(data_raw_acceleration[1]);
     acceleration_mg[2] = lis2dh_from_fs2_nm_to_mg(data_raw_acceleration[2]);
@@ -116,6 +109,9 @@ void accel_read(float *accelStruct) {
 
 }
 
+/*
+ * Tap feature not used
+ */
 void accel_tap_init(void) {
   // Based on SparkFun's implementation: https://github.com/sparkfun/SparkFun_LIS2DH12_Arduino_Library/tree/master/examples/Example4_TapDetection
 

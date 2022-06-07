@@ -40,8 +40,6 @@ void drawMainScreen(void) {
   BSP_LCD_FillCircle(120, 240, currentSize);
 
   BSP_LCD_SetTextColor(LCD_COLOR_BLACK);
-//  BSP_LCD_DisplayStringAt(0, 72, "Ink color", CENTER_MODE);
-//  BSP_LCD_DisplayStringAt(0, 232, "Cursor size", CENTER_MODE);
 }
 
 void drawColorPicker(void) {

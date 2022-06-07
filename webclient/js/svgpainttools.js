@@ -16,15 +16,13 @@ const fillBackground = mySVG.appendSVG("rect", {
   fill: "%23FFFFFF",
 });
 
-/*
 const rect2 = mySVG.appendSVG("rect", {
   x: 0,
   y: 0,
-  width: 1600,
-  height: 824,
+  width: textureSize / 4,
+  height: 104,
   fill: "%23007BB855",
 });
-*/
 
 /*
 UV MAPPING
@@ -100,7 +98,7 @@ const xyzSplotch = (x, y, z) => {
     cy,
     r: cursorSize,
     fill: `%23${cursorColor}55`,
-  }); // TODO: make color and size respond to cursor state
+  });
 };
 
 // For now: a hack to decimate the number of times this runs

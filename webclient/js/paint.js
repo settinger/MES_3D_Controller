@@ -93,7 +93,7 @@ const texCallback = (texture) => {
 
 const loader = new THREE.TextureLoader();
 const updateTexture = () => {
-  if (false) {
+  if (true) {
     const texture = loader.load(canvas.toDataURL("image/jpg"), texCallback);
   } else {
     const svgData = new XMLSerializer().serializeToString(mySVG);

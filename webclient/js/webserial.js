@@ -43,7 +43,6 @@ const commandProcess = (stream) => {
   } else if (args[0] == "c") {
     // A change-color command was received
     if (args.length != 2) return;
-    // TODO: SET COLOR OF CURSOR AND ART HERE
     cursorColor = args[1].trim();
     cursor.material.color.setHex(`0x${cursorColor}`);
   } else if (args[0] == "r") {
@@ -51,9 +50,7 @@ const commandProcess = (stream) => {
     if (args.length != 2) return;
     let size = parseInt(args[1]);
     if (!size || size < 0 || size > 120) return;
-    // TODO: SET CURSOR SIZE HERE
     // Unfortunately the only way I know to change the cursor radius is with scale()
-    console.log(`scaling by ${size}/${cursorSize} = ${size / cursorSize}`);
     cursorGeo.scale(size / cursorSize, size / cursorSize, size / cursorSize);
     cursorSize = size;
   }

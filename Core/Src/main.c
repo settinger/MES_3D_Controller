@@ -43,7 +43,6 @@
 #include "stm32f429i_discovery_gyroscope.h"
 
 #include "app.h"
-#include "button.h"
 #include "console.h"
 #include "touchscreen.h"
 #include "accel.h"
@@ -301,56 +300,6 @@ int main(void) {
 
       lastFrameTick = nextTick;
     }
-
-    /*
-     // If two seconds have elapsed, update gyro
-     if ((APP_NORMAL == appState) && ((nextTick - lastSecondTick) > 1000)) {
-
-
-     //      // Update clock time
-     //      BSP_GYRO_GetXYZ(gyro);
-     //      // Todo: figure out what XYZ correspond to
-     //      accel_getValues();
-     //      char gyrotext[200];
-     //      sprintf(gyrotext, "Gyro [DPS]:%4.2f\t%4.2f\t%4.2f",
-     //      //gyro[0], gyro[1], gyro[2]);
-     //          gyro[0] * 0.001, gyro[1] * 0.001, gyro[2] * 0.001);
-     //      ConsoleSendLine(gyrotext);
-
-     lastSecondTick += 1000;
-     }
-     // Idle so screen is drawn at (at most) 50 FPS
-     if ((nextTick - lastFrameTick) > FRAME_DELAY) {
-     lastFrameTick = nextTick;
-
-     // If app is in transition state (APP_INIT),
-     // do things needed to move to next state
-     if (APP_INIT == appState) {
-     // TODO: things
-     appState = APP_NORMAL;
-     }
-
-     // If app is in NORMAL state, check for screen touch
-     // This may cause it to enter a transition state
-     if (APP_NORMAL == appState) {
-     BSP_TS_GetState(&TS_State);
-     checkTouch();
-     }
-
-     // If app is in NORMAL state, check for console keypresses
-     // This may cause it to enter a transition state
-     if (APP_NORMAL == appState) {
-     appState = ConsoleProcess(appState);
-     }
-
-     // If app is in NORMAL state, check for user button press
-     // Double-click resets cursor origin
-     // Press and hold draws a stroke
-     if (APP_NORMAL == appState) {
-     appState = buttonProcess(appState);
-     }
-     }
-     */
 
     /* USER CODE END WHILE */
 
