@@ -17,7 +17,6 @@
  */
 /* USER CODE END Header */
 /* Includes ------------------------------------------------------------------*/
-
 #include "main.h"
 #include "crc.h"
 #include "dma2d.h"
@@ -111,7 +110,6 @@ static void handleTouchBegin(void) {
   char string[60];
   sprintf(string, "Touch X coordinate: %d\r\nTouch Y coordinate: %d", x, y);
   ConsoleSendLine(string);
-  // TODO: color picker and size adjust
   if (appState == APP_NORMAL) {
     appState = mainScreenTouchHandler(x, y);
   } else if (appState == APP_COLORPICKER) {
@@ -173,6 +171,26 @@ static void clearMaybe() {
       handleTouchEnd();
     }
   }
+}
+
+/*
+ * External-interrupt callback to turn on LD4 when a button is pressed
+ * (and off when button is released).
+ *
+ * This WAS used with a debouncing algorithm to handle button presses
+ * outside of the normal 40 FPS loop, but it felt cleaner to handle it
+ * without using interrupts during normal loop operation. But the
+ * interrupt remains, toggling an LED to demonstrate that I have the
+ * capacity to use a button interrupt if so needed.
+ *
+ * For an interrupt that actually does something useful, see the
+ * ConsoleIoReceive() method in "console_io.c" in the Projective Set
+ * repository. That uses the non-blocking HAL_UART_Receive_IT() HAL
+ * method to detect and process received serial data. It exists in this
+ * repo as well but isn't used, since the UART here only transmits.
+ */
+void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin) {
+  HAL_GPIO_WritePin(LED4_GPIO_PORT, LD4_Pin, BSP_PB_GetState(BUTTON_KEY));
 }
 
 /* USER CODE END 0 */
@@ -267,8 +285,8 @@ int main(void) {
   appState = APP_NORMAL;
 
   ConsoleMoveEuler(MOVE_CURSOR, 0.0, 0.0); // This will reset the orientation of the cursor on the web client
-  ConsoleChangeColor(currentColor);        // This ensures the web client color matches the initial board color
-  ConsoleResizeCursor(currentSize);        // This ensures the web client cursor size matches the board's
+  ConsoleChangeColor(currentColor); // This ensures the web client color matches the initial board color
+  ConsoleResizeCursor(currentSize); // This ensures the web client cursor size matches the board's
 
   /* USER CODE END 2 */
 
