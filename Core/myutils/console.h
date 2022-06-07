@@ -1,7 +1,5 @@
 /*
  * console.h
- * CLI code ported from Elecia White's:
- * https://wokwi.com/projects/324879108372693587
  *
  *  Created on: May 3, 2022
  *      Author: Sam
@@ -47,15 +45,15 @@ typedef enum {
 
 // Enum of colors used in the drawing process
 typedef enum {
-  COLOR_DEFAULT    = "007BB8",  // Robins-egg blue
-  COLOR_LIGHT_BLUE = "007BB8",  // Robins-egg blue
-  COLOR_DARK_BLUE  = "3B5998",  // "Facebook Blue"
-  COLOR_PINK       = "FF91CF",  //
-  COLOR_RED        = "8A1212",  // Deep red
-  COLOR_GREEN      = "1C8A12",  //
-  COLOR_GOLD       = "D9D62E",  //
-  COLOR_VIOLET     = "782ED9",  //
-  COLOR_ORANGE     = "ED750C"   //
+  COLOR_DEFAULT    = 0x007BB8,  // Robins-egg blue
+  COLOR_LIGHT_BLUE = 0x007BB8,  // Robins-egg blue
+  COLOR_DARK_BLUE  = 0x0F10E2,  //
+  COLOR_PINK       = 0xFF91CF,  //
+  COLOR_RED        = 0x8A1212,  // Deep red
+  COLOR_GREEN      = 0x1C8A12,  //
+  COLOR_GOLD       = 0xD9D62E,  //
+  COLOR_VIOLET     = 0x782ED9,  //
+  COLOR_ORANGE     = 0xED750C   //
 } clientColor;
 
 // Commands for receiving/sending strings
@@ -63,7 +61,7 @@ typedef enum {
 commandResult ConsoleSendString(const char *buffer);
 commandResult ConsoleSendLine(const char *buffer);
 commandResult ConsoleMoveEuler(clientCommand command, float theta, float phi);
-commandResult ConsoleResizeCursor(clientCommand command, uint16_t size);
-commandResult ConsoleChangeColor(clientCommand command, clientColor color);
+commandResult ConsoleResizeCursor(uint16_t size);
+commandResult ConsoleChangeColor(clientColor color);
 
 #endif /* SRC_CONSOLE_H_ */

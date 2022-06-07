@@ -130,36 +130,36 @@ commandResult ConsoleSendLine(const char *buffer) {
 
 /*
  * ConsoleCursorEuler
- * Instructions of the form "^[theta],[phi]" tell the web client
+ * Instructions of the form "m,[theta],[phi]" tell the web client
  * to set the cursor to that Euler angle
  */
 commandResult ConsoleCursorEuler(float theta, float phi) {
   char command[100];
-  sprintf(command, "^%4.2f,%4.2f", theta, phi);
+  sprintf(command, "m,%4.2f,%4.2f", theta, phi);
   ConsoleSendLine(command);
   return COMMAND_SUCCESS;
 }
 
 /*
  * ConsoleDrawEuler
- * Instructions of the form "![theta],[phi]" tell the web client
+ * Instructions of the form "d,[theta],[phi]" tell the web client
  * to draw a texture at that Euler angle without moving the cursor
  */
 commandResult ConsoleDrawEuler(float theta, float phi) {
   char command[100];
-  sprintf(command, "!%4.2f,%4.2f", theta, phi);
+  sprintf(command, "d,%4.2f,%4.2f", theta, phi);
   ConsoleSendLine(command);
   return COMMAND_SUCCESS;
 }
 
 /*
  * ConsoleDrawCursorEuler
- * Instructions of the form "@[theta],[phi]" tell the web client
+ * Instructions of the form "x,[theta],[phi]" tell the web client
  * to set the cursor to that Euler angle AND draw a texture there
  */
 commandResult ConsoleDrawCursorEuler(float theta, float phi) {
   char command[100];
-  sprintf(command, "@%4.2f,%4.2f", theta, phi);
+  sprintf(command, "x,%4.2f,%4.2f", theta, phi);
   ConsoleSendLine(command);
   return COMMAND_SUCCESS;
 }
@@ -170,9 +170,9 @@ commandResult ConsoleDrawCursorEuler(float theta, float phi) {
  * and/or update the location of the cursor.
  */
 commandResult ConsoleMoveEuler(clientCommand command, float theta, float phi) {
-  char command[100];
-  sprintf(command, "%c,%4.2f,%4.2f", command, theta, phi);
-  ConsoleSendLine(command);
+  char toSend[100];
+  sprintf(toSend, "%c,%4.2f,%4.2f", command, theta, phi);
+  ConsoleSendLine(toSend);
   return COMMAND_SUCCESS;
 }
 
@@ -180,10 +180,10 @@ commandResult ConsoleMoveEuler(clientCommand command, float theta, float phi) {
  * ConsoleResizeCursor
  * Use the input to resize the cursor drawing on the texture
  */
-commandResult ConsoleResizeCursor(clientCommand command, uint16_t size) {
-  char command[100];
-  sprintf(command, "r,%u", command, size);
-  ConsoleSendLine(command);
+commandResult ConsoleResizeCursor(uint16_t size) {
+  char toSend[100];
+  sprintf(toSend, "r,%u", size);
+  ConsoleSendLine(toSend);
   return COMMAND_SUCCESS;
 }
 
@@ -191,9 +191,9 @@ commandResult ConsoleResizeCursor(clientCommand command, uint16_t size) {
  * ConsoleChangeColor
  * Use the input to change the color on the texture
  */
-commandResult ConsoleChangeColor(clientCommand command, clientColor color) {
-  char command[100];
-  sprintf(command, "c,%s", command, color);
-  ConsoleSendLine(command);
+commandResult ConsoleChangeColor(clientColor color) {
+  char toSend[100];
+  sprintf(toSend, "c,0x%X6", color);
+  ConsoleSendLine(toSend);
   return COMMAND_SUCCESS;
 }

@@ -87,7 +87,7 @@ sensors_t boardSensors; // The struct that holds accelerometer data, gyro data, 
 /* Private function prototypes -----------------------------------------------*/
 void SystemClock_Config(void);
 /* USER CODE BEGIN PFP */
-static structAppState handleTouchBegin(void);
+static void handleTouchBegin(void);
 static void handleTouchEnd(void);
 static void clearIdle(void);
 static void touchMaybe(void);
@@ -102,7 +102,7 @@ static void clearMaybe(void);
  * Nonblocking(?) Touch detection with debounce based on WaitForPressedState() method
  */
 // Run this when a touch has been confirmed to be occurring
-static structAppState handleTouchBegin(void) {
+static void handleTouchBegin(void) {
   int16_t x = TS_State.X;
   int16_t y = TS_State.Y;
   y = 320 - y;
@@ -110,7 +110,13 @@ static structAppState handleTouchBegin(void) {
   sprintf(string, "Touch X coordinate: %d\r\nTouch Y coordinate: %d", x, y);
   ConsoleSendLine(string);
   // TODO: color picker and size adjust
-  return APP_NORMAL;
+  if (appState == APP_NORMAL) {
+    appState = mainScreenTouchHandler(x, y);
+  } else if (appState == APP_COLORPICKER) {
+    appState = colorPickerTouchHandler(x, y);
+  } else if (appState == APP_SIZEPICKER) {
+    appState = sizePickerTouchHandler(x, y);
+  }
 }
 
 // Run this when a touch has been confirmed to have ended
@@ -134,7 +140,7 @@ static void touchMaybe(void) {
     if (4 == touchStateTransition) {
       checkTouch = &touchIdle;
       touchStateTransition = 0;
-      appState = handleTouchBegin();
+      handleTouchBegin();
     }
   } else {
     checkTouch = &clearIdle;
@@ -276,16 +282,16 @@ int main(void) {
 
       // If button is pressed, update cursor location and drawing; otherwise, just update cursor location
       if (GPIO_PIN_SET == BSP_PB_GetState(BUTTON_KEY)) {
-        ConsoleDrawCursorEuler(boardSensors.KalmanStateTheta,
+        ConsoleMoveEuler(MOVE_AND_DRAW, boardSensors.KalmanStateTheta,
             boardSensors.KalmanStatePhi);
       } else {
-        ConsoleCursorEuler(boardSensors.KalmanStateTheta,
+        ConsoleMoveEuler(MOVE_CURSOR, boardSensors.KalmanStateTheta,
             boardSensors.KalmanStatePhi);
       }
 
       // If touch screen is pressed, handle it here
       // (Touch screen used to change cursor color and size)
-      //checkTouch();
+      checkTouch();
 
       lastFrameTick = nextTick;
     }

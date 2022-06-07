@@ -14,7 +14,7 @@
 
 void clearScreen() {
   BSP_LCD_SetTextColor(LCD_COLOR_LIGHTGRAY);
-  BSP_LCD_FillRect(0, 0, 240, 300);
+  BSP_LCD_FillRect(0, 0, 240, 320);
 }
 void prepareDisplay(void) {
   BSP_LCD_DisplayOn();
@@ -24,12 +24,41 @@ void prepareDisplay(void) {
   BSP_LCD_SetBackColor(LCD_COLOR_LIGHTGRAY);
   BSP_LCD_SetFont(&Font16);
 
-  // TODO: take these out
-  BSP_LCD_SetTextColor(LCD_COLOR_WHITE);
-  BSP_LCD_FillCircle(100, 200, 10);
-  BSP_LCD_SetTextColor(LCD_COLOR_ORANGE);
-  BSP_LCD_FillCircle(140, 160, 15);
-  BSP_LCD_SetTextColor(LCD_COLOR_BLUE);
-  BSP_LCD_FillCircle(180, 120, 20);
+  drawColorPicker();
+}
+
+void drawMainScreen(void) {
+  // Draw an "Ink color" button and a "Cursor size" button
+  BSP_LCD_SetTextColor(LCD_COLOR_CYAN); // TODO: change how color is selected
+  BSP_LCD_FillRect(40, 20, 160, 120);
+  BSP_LCD_SetTextColor(LCD_COLOR_DARKGRAY);
+  BSP_LCD_FillCircle(120, 240, 60); // TODO: change how this size is selected
+
   BSP_LCD_SetTextColor(LCD_COLOR_BLACK);
+//  BSP_LCD_DisplayStringAt(0, 72, "Ink color", CENTER_MODE);
+//  BSP_LCD_DisplayStringAt(0, 232, "Cursor size", CENTER_MODE);
+}
+
+void drawColorPicker(void) {
+  // Fill in some nice rectangles of color
+  BSP_LCD_SetTextColor(0xFF782ED9); // Violet
+  BSP_LCD_FillRect(0, 0, 120, 80);
+  BSP_LCD_SetTextColor(0xFF007BB8); // Azulejo blue
+  BSP_LCD_FillRect(120, 0, 120, 80);
+  BSP_LCD_SetTextColor(0xFF0F10E2); // Dark blue
+  BSP_LCD_FillRect(0, 80, 120, 80);
+  BSP_LCD_SetTextColor(0xFF1C8A12); // Green
+  BSP_LCD_FillRect(120, 80, 120, 80);
+  BSP_LCD_SetTextColor(0xFFD9D62E); // Gold
+  BSP_LCD_FillRect(0, 160, 120, 80);
+  BSP_LCD_SetTextColor(0xFFED750C); // Orange
+  BSP_LCD_FillRect(120, 160, 120, 80);
+  BSP_LCD_SetTextColor(0xFF8A1212); // Deep red
+  BSP_LCD_FillRect(0, 240, 120, 80);
+  BSP_LCD_SetTextColor(0xFFFF91CF); // Pink
+  BSP_LCD_FillRect(120, 240, 120, 80);
+}
+
+void drawSizePicker(void) {
+
 }

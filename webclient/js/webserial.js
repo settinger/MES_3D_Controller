@@ -36,8 +36,8 @@ const commandProcess = (stream) => {
     let θ = parseFloat(args[1]);
     let φ = parseFloat(args[2]);
     if (θ < -90 || θ > 90 || φ < -180 || φ > 180) return;
-    orient(θ, φ);
     symmetricSplotch(θ, φ);
+    orient(θ, φ);
   } else if (args[0] == "c") {
     // A change-color command was received
     if (args.length != 2 || args[1].length != 6) return;
@@ -65,7 +65,7 @@ async function readUntilClosed() {
         for (let glyph of newInput) {
           stream += glyph;
           if (glyph == "\n" || glyph == "\0") {
-            //console.log(stream);
+            console.log(stream);
             commandProcess(stream);
             stream = "";
           }

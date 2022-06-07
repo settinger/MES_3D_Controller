@@ -22,4 +22,8 @@
 void prepareDisplay(void);
 void clearScreen(void);
 
+void drawMainScreen(void);
+void drawColorPicker(void);
+void drawSizePicker(void);
+
 #endif /* MYUTILS_MY_GRAPHICS_H_ */

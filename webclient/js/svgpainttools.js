@@ -93,7 +93,12 @@ const xyzSplotch = (x, y, z) => {
   mySVG.appendSVG("circle", { cx, cy, r: 20, fill: "%23007BB855" });
 };
 
+// For now: a hack to decimate the number of times this runs
+let dec = 0;
 const symmetricSplotch = (θ, φ) => {
+  dec++;
+  if (dec < 4) return;
+  dec = 0;
   let [x0, y0, z0] = θφ2xyz(θ, φ);
   for (let x of [x0, -x0]) {
     for (let y of [y0, -y0]) {
